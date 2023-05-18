@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNet.Math", "VNet.Math\VNet.Math.csproj", "{97AAEEDA-7BA9-4E7B-A91F-A2360D3FFD8A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VNet.Math.Tests", "VNet.Math.Tests\VNet.Math.Tests.csproj", "{2DDCD2EE-069A-4966-967B-ED87DBB75BAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97AAEEDA-7BA9-4E7B-A91F-A2360D3FFD8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97AAEEDA-7BA9-4E7B-A91F-A2360D3FFD8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97AAEEDA-7BA9-4E7B-A91F-A2360D3FFD8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97AAEEDA-7BA9-4E7B-A91F-A2360D3FFD8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DDCD2EE-069A-4966-967B-ED87DBB75BAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DDCD2EE-069A-4966-967B-ED87DBB75BAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DDCD2EE-069A-4966-967B-ED87DBB75BAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DDCD2EE-069A-4966-967B-ED87DBB75BAF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9FA9E89D-B223-4113-86A2-AC324E17BE8B}
+	EndGlobalSection
+EndGlobal
