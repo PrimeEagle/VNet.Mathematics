@@ -3,7 +3,7 @@ using VNet.System;
 
 namespace VNet.Mathematics.Randomization.Distribution.Continuous
 {
-    public class Gamma : RandomDistributionBase, IContinuousRandomDistributionAlgorithm, IGammaDistributionAlgorithm
+    public class Gamma : RandomDistributionBase, IGammaDistributionAlgorithm
     {
         private double _shape;
         private double _scale;

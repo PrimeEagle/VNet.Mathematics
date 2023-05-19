@@ -13,7 +13,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             if (lambda <= 0d) throw new ArgumentOutOfRangeException(nameof(lambda), "Must be a positive number.");
 
             _lambda = lambda;
-            _gammaDistribution = new Gamma();
+            _gammaDistribution = new Gamma(_randomGenerator);
         }
 
         public Exponential(IRandomGenerationAlgorithm randomGenerator, double lambda) : base(randomGenerator)
