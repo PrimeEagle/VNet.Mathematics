@@ -19,6 +19,17 @@
 //        // ReSharper disable once MemberCanBePrivate.Global
 //        public int NumColumns => M;
 //        public bool IsSquare => N == M;
+//        public bool IsSymmetric => throw new NotImplementedException();
+//        public bool IsOrthogonal => throw new NotImplementedException();
+//        public bool IsHermitian => throw new NotImplementedException();
+//        public bool IsSkewHermitian => throw new NotImplementedException();
+//        public bool IsToeplitz => throw new NotImplementedException();
+//        public bool IsHankel => throw new NotImplementedException();
+//        public bool IsDiagonal => throw new NotImplementedException();
+//        public bool IsScalar => throw new NotImplementedException();
+//        public bool IsZero => throw new NotImplementedException();
+//        public bool IsIdentity => throw new NotImplementedException();
+//        public bool IsUnit => throw new NotImplementedException();
 //        internal T[,] Data { get; }
 
 //        public T this[int index1, int index2]
@@ -31,24 +42,6 @@
 //        public Matrix(T[,] data)
 //        {
 //            Data = data;
-//        }
-
-//        public Matrix(DenseMatrix denseMatrix)
-//        {
-//            var rows = denseMatrix.RowCount;
-//            var cols = denseMatrix.ColumnCount;
-
-//            var rectangularArray = new T[rows, cols];
-
-//            for (var i = 0; i < rows; i++)
-//            {
-//                for (var j = 0; j < cols; j++)
-//                {
-//                    rectangularArray[i, j] = Generic.ConvertFromObject<T>(denseMatrix[i, j]);
-//                }
-//            }
-
-//            Data = rectangularArray;
 //        }
 
 //        public Matrix(int n, int m)
@@ -129,12 +122,62 @@
 
 //        }
 
-//        public Matrix<T> CrossProduct(Matrix<T> matrix)
+//        public Matrix<T> Unit()
 //        {
 
 //        }
 
-//        public T DotProduct(Matrix<T> matrix)
+//        public static Matrix<T> Unit(int n, int m)
+//        {
+
+//        }
+
+//        public Matrix<T> Zero()
+//        {
+
+//        }
+
+//        public static Matrix<T> Zero(int n, int m)
+//        {
+
+//        }
+
+//        public Matrix<T> HadamardProduct(Matrix<T> matrix)
+//        {
+
+//        }
+
+//        public Matrix<T> SchurProduct(Matrix<T> matrix)
+//        {
+//            return HadamardProduct(matrix);
+//        }
+
+//        public Matrix<T> ElementWiseMultiply(Matrix<T> matrix)
+//        {
+//            return HadamardProduct(matrix);
+//        }
+
+//        public Matrix<T> FrobeniusInnerProduct(Matrix<T> matrix)
+//        {
+
+//        }
+
+//        public Matrix<T> MatrixMultiply(Matrix<T> matrix)
+//        {
+
+//        }
+
+//        public Matrix<T> KroneckerProduct(Matrix<T> matrix)
+//        {
+
+//        }
+
+//        public Matrix<T> TensorProduct(Matrix<T> matrix)
+//        {
+
+//        }
+
+//        public Matrix<T> ExteriorProduct(Matrix<T> matrix)
 //        {
 
 //        }
@@ -144,21 +187,114 @@
 //            return decompositionAlgorithm.Decompose(Clone(), useFullPivot);
 //        }
 
-//        internal DenseMatrix ToMathNetDenseMatrix()
+//        public Matrix<T> RowEchelonForm()
 //        {
-//            var matrix = MathNet.Numerics.LinearAlgebra.Matrix<double>.Build.Dense(N, M);
 
-//            // Fill the data array with some values
-//            for (var i = 0; i < N; i++)
-//            {
-//                for (var j = 0; j < M; j++)
-//                {
-//                    // For this example, set each element to the sum of its indices.
-//                    matrix[i, j] = Generic.ConvertType<T, double>(Data[i,j]);
-//                }
-//            }
+//        }
 
-//            return (DenseMatrix)matrix;
+//        public Matrix<T> ReducedRowEchelonForm()
+//        {
+
+//        }
+
+//        public Matrix<T> UpperTriangularForm()
+//        {
+
+//        }
+
+//        public Matrix<T> LowerTriangularForm()
+//        {
+
+//        }
+
+//        public Matrix<T> DiagonalForm()
+//        {
+
+//        }
+
+//        public Matrix<T> JordanNormalForm()
+//        {
+
+//        }
+
+//        public T FrobeniusNorm()
+//        {
+
+//        }
+
+//        public T PNorm()
+//        {
+
+//        }
+
+//        public T LpNorm()
+//        {
+//            return PNorm();
+//        }
+
+//        public T HolderNorm()
+//        {
+//            return PNorm();
+//        }
+
+//        public T SchattenPNorm()
+//        {
+//            return PNorm();
+//        }
+
+//        public T InfinityNorm()
+//        {
+
+//        }
+
+//        public T MaximumAbsoluteRowSumNorm()
+//        {
+//            return InfinityNorm();
+//        }
+
+//        public T OneNorm()
+//        {
+
+//        }
+
+//        public T MaximumAbsoluteColumnSumNorm()
+//        {
+//            return OneNorm();
+//        }
+
+//        public T TwoNorm()
+//        {
+
+//        }
+
+//        public T SpectralNorm()
+//        {
+//            return TwoNorm();
+//        }
+
+//        public T NuclearNorm()
+//        {
+
+//        }
+
+//        public T Trace()
+//        {
+
+//        }
+
+//        public T Rank()
+//        {
+
+//        }
+
+//        public T Eigenvalue()
+//        {
+
+//        }
+
+//        public Matrix<T> Eigenvecor()
+//        {
+
 //        }
 
 //        public Matrix<T> SwapRows(int row1Index, int row2Index)
@@ -185,22 +321,7 @@
 //            return newMatrix;
 //        }
 
-//        public Matrix<T> Pivot(MatrixPivotType pivotType)
-//        {
-//            switch (pivotType)
-//            {
-//                case MatrixPivotType.Partial:
-//                    return PivotPartial();
-//                    break;
-//                case MatrixPivotType.Full:
-//                    return PivotFull();
-//                    break;
-//                default:
-//                    throw new NotImplementedException();
-//            }
-//        }
-
-//        private Matrix<T> PivotPartial()
+//        public Matrix<T> PartialPivot()
 //        {
 //            var newMatrix = Clone();
 
@@ -225,7 +346,7 @@
 //            return newMatrix;
 //        }
 
-//        private Matrix<T> PivotFull()
+//        public Matrix<T> FullPivot()
 //        {
 //            var newMatrix = Clone();
 
