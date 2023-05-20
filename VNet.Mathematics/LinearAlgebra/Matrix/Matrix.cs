@@ -149,6 +149,23 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         }
     }
 
+    public bool IsPositiveDefinite
+    {
+        get
+        {
+            var matrix = Clone();
+
+            var tempData = new double[N, M];
+            for (var i = 0; i < N; i++)
+                for (var j = 0; j < M; j++)
+                    tempData[i, j] = GenericNumber<T>.ToDouble(matrix[i, j]);
+
+            var success = alglib.spdmatrixcholesky(ref tempData, N, false);
+
+            return success;
+        }
+    }
+
     public bool IsUnit
     {
         get
@@ -546,7 +563,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     #region Decompositions
     public DecomposedMatrix<T> Decompose(IMatrixDecompositionAlgorithm<T> decompositionAlgorithm, MatrixPivotType pivotType = MatrixPivotType.None)
     {
-        return decompositionAlgorithm.Decompose(this, pivotType);
+        return decompositionAlgorithm.Decompose(Clone(), pivotType);
     }
     #endregion Decompositions
 
@@ -913,6 +930,25 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         return new Tuple<int, int>(pivotRow, pivotCol);
     }
 
+    public int FullPivotColumn(int startRow)
+    {
+        var maxColumn = startRow;
+        double maxSum = 0;
+
+        for (var j = startRow; j < N; j++)
+        {
+            double sum = 0;
+            for (var i = startRow; i < N; i++)
+                sum += Math.Pow(GenericNumber<T>.ToDouble(Data[i, j]), 2);
+
+            if (!(sum > maxSum)) continue;
+            maxSum = sum;
+            maxColumn = j;
+        }
+
+        return maxColumn;
+    }
+
     public Matrix<T> GaussianElimination(MatrixPivotType pivotType = MatrixPivotType.None)
     {
         var matrix = Clone();
@@ -1187,8 +1223,8 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var tempData = new double[N, M];
         for (var i = 0; i < N; i++)
-        for (var j = 0; j < M; j++)
-            tempData[i, j] = GenericNumber<T>.ToDouble(Data[i, j]);
+            for (var j = 0; j < M; j++)
+                tempData[i, j] = GenericNumber<T>.ToDouble(Data[i, j]);
 
         alglib.rmatrixsvd(tempData, M, N, 1, 0, 2, out var w, out var u, out var vt);
 
