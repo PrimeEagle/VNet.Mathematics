@@ -105,20 +105,15 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         get
         {
-            for (int i = 0; i < N; i++)
-            {
-                for (int j = 0; j < M; j++)
-                {
+            for (var i = 0; i < N; i++)
+                for (var j = 0; j < M; j++)
                     if (i != j && Math.Abs(GenericNumber<T>.ToDouble(Data[i, j])) > 1e-9) // Off-diagonal elements should be 0
-                    {
                         return false;
-                    }
-                }
-            }
 
             return true;
         }
     }
+
     public bool IsScalar => N == 1 && M == 1;
 
     public bool IsZero
@@ -167,13 +162,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         }
     }
 
-    public bool IsSingular
-    {
-        get
-        {
-            return Determinant() == GenericNumber<T>.FromInt(0);
-        }
-    }
+    public bool IsSingular => Determinant() == GenericNumber<T>.FromInt(0);
 
     private T[,] Data { get; }
 
@@ -202,144 +191,15 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         return result;
     }
-
-    public Matrix<T> Clone()
-    {
-        var newMatrixData = new T[N, M];
-
-        for (var i = 0; i < N; i++)
-            for (var j = 0; j < M; j++)
-                newMatrixData[i, j] = Data[i, j];
-
-        return new Matrix<T>(newMatrixData);
-    }
-
-    public Matrix<T> Transpose()
-    {
-        var transpose = new Matrix<T>(M, N);
-
-        for (var i = 0; i < N; i++)
-        {
-            for (var j = 0; j < M; j++)
-            {
-                transpose[j, i] = Data[i, j];
-            }
-        }
-
-        return transpose;
-    }
-
-    public Matrix<T> Majors()
-    {
-        var majors = new Matrix<T>(N, N);
-
-        for (var i = 0; i < N; i++)
-        {
-            for (var j = 0; j < N; j++)
-            {
-                var minor = Minor(i, j);
-                majors[i, j] = minor.Determinant();
-            }
-        }
-
-        return majors;
-    }
-
-    public Matrix<T> Minor(int row, int column)
-    {
-        var minor = new Matrix<T>(N - 1, N - 1);
-        int minorRow = 0, minorCol = 0;
-
-        for (var i = 0; i < N; i++)
-        {
-            if (i == row) continue;
-            for (var j = 0; j < N; j++)
-            {
-                if (j == column) continue;
-                minor[minorRow, minorCol] = Data[i, j];
-                minorCol++;
-
-                if (minorCol < N - 1) continue;
-                minorCol = 0;
-                minorRow++;
-            }
-        }
-
-        return minor;
-    }
-
-    public T Determinant()
-    {
-        if (N == 1)
-        {
-            return Data[0, 0];
-        }
-        else if (N == 2)
-        {
-            return Data[0, 0] * Data[1, 1] - Data[0, 1] * Data[1, 0];
-        }
-        else
-        {
-            T det = GenericNumber<T>.FromDouble(0.0d);
-            for (var j = 0; j < N; j++)
-            {
-                var minor = Minor(0, j);
-                det += GenericNumber<T>.FromDouble(j % 2 == 1 ? -1.0 : 1.0) * Data[0, j] * minor.Determinant();
-            }
-
-            return det;
-        }
-    }
-
-    public Matrix<T> Inverse()
-    {
-        var result = Identity();
-        var copy = Clone();
-
-        for (var i = 0; i < N; i++)
-        {
-            var diagonalValue = copy[i, i];
-
-            var tempRow = copy.DivideRow(i, diagonalValue);
-            copy.ReplaceRow(i, tempRow);
-
-            tempRow = result.DivideRow(i, diagonalValue);
-            result.ReplaceRow(i, tempRow);
-
-            for (var j = 0; j < N; j++)
-            {
-                if (i == j) continue;
-
-                var otherRowValue = copy[j, i];
-                var fromRow = copy.MultiplyRow(i, otherRowValue);
-                var toRow = copy.MultiplyRow(j, otherRowValue);
-
-                for (var c = 0; c < fromRow.Count; c++)
-                {
-                    toRow[c] = toRow[c] - fromRow[c];
-                }
-                copy.ReplaceRow(j, toRow);
-
-                fromRow = result.MultiplyRow(i, otherRowValue);
-                toRow = result.MultiplyRow(j, otherRowValue);
-                for (var c = 0; c < fromRow.Count; c++)
-                {
-                    toRow[c] = toRow[c] - fromRow[c];
-                }
-                result.ReplaceRow(j, toRow);
-            }
-        }
-
-        return result;
-    }
-
+    
+    #region Matrix Creation
     public Matrix<T> Random(IRandomGenerationAlgorithm randomAlgorithm)
     {
         var result = Clone();
 
         for (var i = 0; i < N; ++i)
             for (var j = 0; j < M; j++)
-                result[i, j] = GenericNumber<T>.FromDouble((randomAlgorithm.NextDouble()));
+                result[i, j] = GenericNumber<T>.FromDouble(randomAlgorithm.NextDouble());
 
         return result;
     }
@@ -374,14 +234,10 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < N; ++i)
             for (var j = 0; j < M; j++)
-            {
                 if (i == j)
                     result[i, j] = GenericNumber<T>.FromInt(1);
                 else
-                {
                     result[i, j] = GenericNumber<T>.FromInt(0);
-                }
-            }
 
         return result;
     }
@@ -392,14 +248,10 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < n; ++i)
             for (var j = 0; j < n; j++)
-            {
                 if (i == j)
                     result[i, j] = GenericNumber<T>.FromInt(1);
                 else
-                {
                     result[i, j] = GenericNumber<T>.FromInt(0);
-                }
-            }
 
         return result;
     }
@@ -431,8 +283,8 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         var result = Clone();
 
         for (var i = 0; i < N; ++i)
-        for (var j = 0; j < M; j++)
-            result[i, j] = GenericNumber<T>.FromInt(0);
+            for (var j = 0; j < M; j++)
+                result[i, j] = GenericNumber<T>.FromInt(0);
 
         return result;
     }
@@ -442,28 +294,146 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         var result = new Matrix<T>(n, m);
 
         for (var i = 0; i < n; ++i)
-        for (var j = 0; j < m; j++)
-            result[i, j] = GenericNumber<T>.FromInt(0);
+            for (var j = 0; j < m; j++)
+                result[i, j] = GenericNumber<T>.FromInt(0);
 
         return result;
     }
+    #endregion Matrix Creation
 
-    public Matrix<T> HadamardProduct(Matrix<T> matrix)
+    #region Scalar Operations
+    public T Determinant()
     {
-        if (N != matrix.N || M != matrix.M)
+        switch (N)
         {
-            throw new ArgumentException("Matrices must be of the same dimensions for the Hadamard product.");
+            case 1:
+                return Data[0, 0];
+            case 2:
+                return Data[0, 0] * Data[1, 1] - Data[0, 1] * Data[1, 0];
         }
 
-        var product = new Matrix<T>(N, M);
+        var det = GenericNumber<T>.FromDouble(0.0d);
+        for (var j = 0; j < N; j++)
+        {
+            var minor = Minor(0, j);
+            det += GenericNumber<T>.FromDouble(j % 2 == 1 ? -1.0 : 1.0) * Data[0, j] * minor.Determinant();
+        }
+
+        return det;
+    }
+    public int Rank(MatrixPivotType pivotType)
+    {
+        var matrix = ReducedRowEchelonForm(pivotType);
+        var rank = 0;
 
         for (var i = 0; i < N; i++)
         {
             for (var j = 0; j < M; j++)
             {
-                product[i, j] = matrix[i, j] * Data[i, j];
+                if (GenericNumber<T>.ToDouble(matrix[i, j]) == 0d) continue;
+                rank++;
+                break;
             }
         }
+
+        return rank;
+    }
+
+    public T Trace()
+    {
+        if (!IsSquare)
+        {
+            throw new ArgumentException("Matrix must be square.");
+        }
+
+        var trace = GenericNumber<T>.FromDouble(0);
+
+        for (var i = 0; i < N; i++)
+        {
+            trace += Data[i, i];
+        }
+
+        return trace;
+    }
+
+    public T Eigenvalue()
+    {
+    }
+    #endregion Scalar Operations
+
+    #region Matrix Operations
+    public Matrix<T> Clone()
+    {
+        var newMatrixData = new T[N, M];
+
+        for (var i = 0; i < N; i++)
+        for (var j = 0; j < M; j++)
+            newMatrixData[i, j] = Data[i, j];
+
+        return new Matrix<T>(newMatrixData);
+    }
+
+    public Matrix<T> Transpose()
+    {
+        var transpose = new Matrix<T>(M, N);
+
+        for (var i = 0; i < N; i++)
+        for (var j = 0; j < M; j++)
+            transpose[j, i] = Data[i, j];
+
+        return transpose;
+    }
+
+    public Matrix<T> Majors()
+    {
+        var majors = new Matrix<T>(N, N);
+
+        for (var i = 0; i < N; i++)
+        for (var j = 0; j < N; j++)
+        {
+            var minor = Minor(i, j);
+            majors[i, j] = minor.Determinant();
+        }
+
+        return majors;
+    }
+
+    public Matrix<T> Minor(int row, int column)
+    {
+        var minor = new Matrix<T>(N - 1, N - 1);
+        int minorRow = 0, minorCol = 0;
+
+        for (var i = 0; i < N; i++)
+        {
+            if (i == row) continue;
+            for (var j = 0; j < N; j++)
+            {
+                if (j == column) continue;
+                minor[minorRow, minorCol] = Data[i, j];
+                minorCol++;
+
+                if (minorCol < N - 1) continue;
+                minorCol = 0;
+                minorRow++;
+            }
+        }
+
+        return minor;
+    }
+
+    public Matrix<T> Eigenvector()
+    {
+    }
+
+    public Matrix<T> HadamardProduct(Matrix<T> matrix)
+    {
+        if (N != matrix.N || M != matrix.M) throw new ArgumentException("Matrices must be of the same dimensions for the Hadamard product.");
+
+        var product = new Matrix<T>(N, M);
+
+        for (var i = 0; i < N; i++)
+            for (var j = 0; j < M; j++)
+                product[i, j] = matrix[i, j] * Data[i, j];
 
         return product;
     }
@@ -480,83 +450,199 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
     public T FrobeniusInnerProduct(Matrix<T> matrix)
     {
-        if (N != matrix.N || M != matrix.M)
-        {
-            throw new ArgumentException("Matrices must be of the same dimensions for the Frobenius inner product.");
-        }
+        if (N != matrix.N || M != matrix.M) throw new ArgumentException("Matrices must be of the same dimensions for the Frobenius inner product.");
 
         var innerProduct = GenericNumber<T>.FromDouble(0.0d);
 
         for (var i = 0; i < N; i++)
-        {
             for (var j = 0; j < M; j++)
-            {
                 innerProduct += Data[i, j] * matrix[i, j];
-            }
-        }
 
         return innerProduct;
     }
 
     public Matrix<T> MatrixMultiply(Matrix<T> matrix)
     {
+        if (M != matrix.N) throw new ArgumentException("Number of columns in the first matrix must be equal to the number of rows in the second matrix for multiplication.");
+
+        var result = new Matrix<T>(N, matrix.M);
+
+        for (var i = 0; i < N; i++)
+            for (var j = 0; j < matrix.M; j++)
+            {
+                result[i, j] = GenericNumber<T>.FromDouble(0);
+                for (var k = 0; k < M; k++) result[i, j] += Data[i, k] * matrix[k, j];
+            }
+
+        return result;
     }
 
     public Matrix<T> KroneckerProduct(Matrix<T> matrix)
     {
+        var result = new Matrix<T>(N * matrix.N, M * matrix.M);
+
+        for (var i = 0; i < N; i++)
+            for (var j = 0; j < M; j++)
+                for (var k = 0; k < matrix.N; k++)
+                    for (var l = 0; l < matrix.M; l++)
+                        result[i * matrix.N + k, j * matrix.M + l] = Data[i, j] * matrix[k, l];
+
+        return result;
     }
 
     public Matrix<T> TensorProduct(Matrix<T> matrix)
     {
+        return KroneckerProduct(matrix);
     }
+    #endregion Matrix Operations
 
-    public Matrix<T> ExteriorProduct(Matrix<T> matrix)
-    {
-    }
-
+    #region Decompositions
     public DecomposedMatrix<T> Decompose(IMatrixDecompositionAlgorithm<T> decompositionAlgorithm, bool useFullPivot = false)
     {
         return decompositionAlgorithm.Decompose(Clone(), useFullPivot);
     }
+    #endregion Decompositions
 
-    public Matrix<T> RowEchelonForm()
+    #region Matrix Forms
+    public Matrix<T> Inverse()
     {
+        var result = Identity();
+        var copy = Clone();
+
+        for (var i = 0; i < N; i++)
+        {
+            var diagonalValue = copy[i, i];
+
+            var tempRow = copy.DivideRow(i, diagonalValue);
+            copy.ReplaceRow(i, tempRow);
+
+            tempRow = result.DivideRow(i, diagonalValue);
+            result.ReplaceRow(i, tempRow);
+
+            for (var j = 0; j < N; j++)
+            {
+                if (i == j) continue;
+
+                var otherRowValue = copy[j, i];
+                var fromRow = copy.MultiplyRow(i, otherRowValue);
+                var toRow = copy.MultiplyRow(j, otherRowValue);
+
+                for (var c = 0; c < fromRow.Count; c++) toRow[c] = toRow[c] - fromRow[c];
+                copy.ReplaceRow(j, toRow);
+
+                fromRow = result.MultiplyRow(i, otherRowValue);
+                toRow = result.MultiplyRow(j, otherRowValue);
+                for (var c = 0; c < fromRow.Count; c++) toRow[c] = toRow[c] - fromRow[c];
+                result.ReplaceRow(j, toRow);
+            }
+        }
+
+        return result;
     }
 
-    public Matrix<T> ReducedRowEchelonForm()
+    public Matrix<T> RowEchelonForm(MatrixPivotType pivotType = MatrixPivotType.None)
     {
+        return GaussianElimination(pivotType);
     }
 
-    public Matrix<T> UpperTriangularForm()
+    public Matrix<T> ReducedRowEchelonForm(MatrixPivotType pivotType = MatrixPivotType.None)
     {
+        return GaussJordanElimination(pivotType);
     }
 
-    public Matrix<T> LowerTriangularForm()
+    public Matrix<T> UpperTriangularForm(MatrixPivotType pivotType = MatrixPivotType.None)
     {
+        return RowEchelonForm(pivotType);
+    }
+
+    public Matrix<T> LowerTriangularForm(MatrixPivotType pivotType = MatrixPivotType.None)
+    {
+        var matrix = Clone();
+
+        var colOrder = Enumerable.Range(0, M).ToArray();
+
+        for (int i = 0; i < Math.Min(N, M); i++)
+        {
+            // Pivot
+            if (pivotType == MatrixPivotType.Full)
+            {
+                var pivotIndices = matrix.FullPivot(i, i);
+                matrix = matrix.SwapRows(i, pivotIndices.Item1);
+                matrix = matrix.SwapColumnsWithOrderTracking(i, pivotIndices.Item2, colOrder);
+            }
+            else if (pivotType == MatrixPivotType.Partial)
+            {
+                var maxRowIndex = matrix.PartialPivot(i, i);
+                matrix = matrix.SwapRows(i, maxRowIndex);
+            }
+
+            // If pivot is zero, no elimination is possible for this column
+            if (matrix[i, i] == GenericNumber<T>.FromDouble(0d))
+            {
+                continue;
+            }
+
+            // Zero out elements above the pivot
+            for (var j = 0; j < i; j++)
+            {
+                var factor = matrix[j, i] / matrix[i, i];
+                for (var k = i; k < M; k++)
+                {
+                    matrix[j, k] -= factor * matrix[i, k];
+                }
+            }
+        }
+
+        // If full pivoting was used, reorder the columns to their original order
+        if (pivotType == MatrixPivotType.Full)
+        {
+            var originalOrderMatrix = new Matrix<T>(N, M);
+            for (var j = 0; j < M; j++)
+            {
+                var originalColIndex = Array.IndexOf(colOrder, j);
+                for (var i = 0; i < N; i++)
+                {
+                    originalOrderMatrix[i, j] = matrix[i, originalColIndex];
+                }
+            }
+            matrix = originalOrderMatrix;
+        }
+
+        return matrix;
     }
 
     public Matrix<T> DiagonalForm()
     {
+        var matrix = UpperTriangularForm();
+
+        for (var i = 0; i < matrix.N; i++)
+        {
+            for (var j = 0; j < i; j++)
+            {
+                var factor = matrix[i, j] / matrix[j, j];
+                for (var k = 0; k < matrix.M; k++)
+                {
+                    matrix[i, k] -= factor * matrix[j, k];
+                }
+            }
+        }
+
+        return matrix;
     }
 
     public Matrix<T> JordanNormalForm()
     {
     }
+    #endregion Matrix Forms
 
-    public T Trace()
+    #region Row Operations
+    public Matrix<T> NormalizeRow(int row1Index)
     {
-    }
+        var newMatrix = Clone();
 
-    public T Rank()
-    {
-    }
+        for (var j = 0; j < M; j++) newMatrix[row1Index, j] = newMatrix[row1Index, j] / newMatrix[row1Index, 0];
 
-    public T Eigenvalue()
-    {
-    }
-
-    public Matrix<T> Eigenvector()
-    {
+        return newMatrix;
     }
 
     public Matrix<T> SwapRows(int row1Index, int row2Index)
@@ -568,6 +654,91 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         return newMatrix;
     }
 
+    public List<T> AddRows(int rowIndex1, int rowIndex2)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex1, j] + Data[rowIndex2, j]);
+
+        return result;
+    }
+
+    public List<T> SubtractRows(int rowIndex1, int rowIndex2)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex1, j] - Data[rowIndex2, j]);
+
+        return result;
+    }
+
+    public List<T> AddRow(int rowIndex1, T scalar)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex1, j] + scalar);
+
+        return result;
+    }
+
+    public List<T> SubtractRow(int rowIndex1, T scalar)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex1, j] - scalar);
+
+        return result;
+    }
+
+    public List<T> MultiplyRow(int rowIndex, T scalar)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex, j] * scalar);
+
+        return result;
+    }
+
+    public List<T> DivideRow(int rowIndex, T scalar)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex, j] / scalar);
+
+        return result;
+    }
+
+    public List<T> MultiplyRows(int rowIndex1, int rowIndex2)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex1, j] * Data[rowIndex2, j]);
+
+        return result;
+    }
+
+    public List<T> DivideRows(int rowIndex1, int rowIndex2)
+    {
+        var result = new List<T>();
+
+        for (var j = 0; j < M; j++) result.Add(Data[rowIndex1, j] / Data[rowIndex2, j]);
+
+        return result;
+    }
+
+    public Matrix<T> ReplaceRow(int rowIndex, List<T> row)
+    {
+        if (M != row.Count) throw new InvalidOperationException("New row must match number of columns in the matrix.");
+
+        var result = Clone();
+
+        for (var j = 0; j < M; j++) result[rowIndex, j] = row[j];
+
+        return result;
+    }
+    #endregion Row Operations
+
+    #region Column Operations
     public Matrix<T> SwapColumns(int col1Index, int col2Index)
     {
         var newMatrix = Clone();
@@ -577,110 +748,11 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         return newMatrix;
     }
 
-    public List<T> AddRows(int rowIndex1, int rowIndex2)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex1, j] + Data[rowIndex2, j]);
-        }
-
-        return result;
-    }
-
-    public List<T> SubtractRows(int rowIndex1, int rowIndex2)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex1, j] - Data[rowIndex2, j]);
-        }
-
-        return result;
-    }
-
-    public List<T> AddRow(int rowIndex1, T scalar)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex1, j] + scalar);
-        }
-
-        return result;
-    }
-
-    public List<T> SubtractRow(int rowIndex1, T scalar)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex1, j] - scalar);
-        }
-
-        return result;
-    }
-
-    public List<T> MultiplyRow(int rowIndex, T scalar)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex, j] * scalar);
-        }
-
-        return result;
-    }
-
-    public List<T> DivideRow(int rowIndex, T scalar)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex, j] / scalar);
-        }
-
-        return result;
-    }
-
-    public List<T> MultiplyRows(int rowIndex1, int rowIndex2)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex1, j] * Data[rowIndex2, j]);
-        }
-
-        return result;
-    }
-
-    public List<T> DivideRows(int rowIndex1, int rowIndex2)
-    {
-        var result = new List<T>();
-
-        for (var j = 0; j < M; j++)
-        {
-            result.Add(Data[rowIndex1, j] / Data[rowIndex2, j]);
-        }
-
-        return result;
-    }
-
     public List<T> AddColumns(int colIndex1, int colIndex2)
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex1] + Data[i, colIndex2]);
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex1] + Data[i, colIndex2]);
 
         return result;
     }
@@ -689,10 +761,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex1] - Data[i, colIndex2]);
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex1] - Data[i, colIndex2]);
 
         return result;
     }
@@ -701,10 +770,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex1] + scalar);
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex1] + scalar);
 
         return result;
     }
@@ -713,10 +779,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex1] - scalar);
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex1] - scalar);
 
         return result;
     }
@@ -725,10 +788,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex] * scalar);
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex] * scalar);
 
         return result;
     }
@@ -737,10 +797,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex] / scalar);
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex] / scalar);
 
         return result;
     }
@@ -749,10 +806,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex1] * Data[i, colIndex2]);
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex1] * Data[i, colIndex2]);
 
         return result;
     }
@@ -761,25 +815,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     {
         var result = new List<T>();
 
-        for (var i = 0; i < N; i++)
-        {
-            result.Add(Data[i, colIndex1] / Data[i, colIndex2]);
-        }
-
-        return result;
-    }
-
-
-    public Matrix<T> ReplaceRow(int rowIndex, List<T> row)
-    {
-        if (M != row.Count) throw new InvalidOperationException("New row must match number of columns in the matrix.");
-
-        var result = Clone();
-
-        for (var j = 0; j < M; j++)
-        {
-            result[rowIndex, j] = row[j];
-        }
+        for (var i = 0; i < N; i++) result.Add(Data[i, colIndex1] / Data[i, colIndex2]);
 
         return result;
     }
@@ -790,71 +826,186 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         var result = Clone();
 
-        for (var i = 0; i < N; i++)
-        {
-            result[i, colIndex] = column[i];
-        }
+        for (var i = 0; i < N; i++) result[i, colIndex] = column[i];
 
         return result;
     }
+    #endregion Column Operations
 
-    public Matrix<T> PartialPivot()
+    #region Support Methods
+    public int PartialPivot(int startRow, int col)
     {
-        var newMatrix = Clone();
+        var maxRowIndex = startRow;
+        var maxVal = Math.Abs(GenericNumber<T>.ToDouble(Data[startRow, col]));
 
-        for (var i = 0; i < newMatrix.N; i++)
+        for (var i = startRow + 1; i < N; i++)
         {
-            var maxIndex = i;
-            var maxValue = Data[i, i];
+            if (!(Math.Abs(GenericNumber<T>.ToDouble(Data[i, col])) > maxVal)) continue;
 
-            for (var j = i + 1; j < newMatrix.N; j++)
+            maxVal = Math.Abs(GenericNumber<T>.ToDouble(Data[i, col]));
+            maxRowIndex = i;
+        }
+
+        return maxRowIndex;
+    }
+
+    public Tuple<int, int> FullPivot(int startRow, int startCol)
+    {
+        var pivotRow = startRow;
+        var pivotCol = startCol;
+        var max = Data[startRow, startCol];
+
+        for (var i = startRow; i < N; i++)
+        {
+            for (var j = startCol; j < M; j++)
             {
-                if (Math.Abs(Generic.ConvertType<T, double>(Data[j, i])) <= Math.Abs(Generic.ConvertType<T, double>(maxValue))) continue;
-                maxIndex = j;
-                maxValue = Data[j, i];
+                if (!(Math.Abs(GenericNumber<T>.ToDouble(Data[i, j])) > Math.Abs(GenericNumber<T>.ToDouble(max)))) continue;
+
+                max = Data[i, j];
+                pivotRow = i;
+                pivotCol = j;
+            }
+        }
+
+        return new Tuple<int, int>(pivotRow, pivotCol);
+    }
+
+    public Matrix<T> GaussianElimination(MatrixPivotType pivotType = MatrixPivotType.None)
+    {
+        var matrix = Clone();
+
+        var colOrder = Enumerable.Range(0, M).ToArray();
+
+        for (var i = 0; i < Math.Min(N, M); i++)
+        {
+            // Pivot
+            if (pivotType == MatrixPivotType.Full)
+            {
+                var pivotIndices = matrix.FullPivot(i, i);
+                matrix = matrix.SwapRows(i, pivotIndices.Item1);
+                matrix = matrix.SwapColumnsWithOrderTracking(i, pivotIndices.Item2, colOrder);
+            }
+            else if (pivotType == MatrixPivotType.Partial)
+            {
+                var maxRowIndex = matrix.PartialPivot(i, i);
+                matrix = matrix.SwapRows(i, maxRowIndex);
             }
 
-            if (maxIndex != i) newMatrix = newMatrix.SwapRows(i, maxIndex);
-        }
+            // If pivot is zero, no elimination is possible for this column
+            if (matrix[i, i] == GenericNumber<T>.FromDouble(0d))
+            {
+                continue;
+            }
 
-        return newMatrix;
-    }
-
-    public Matrix<T> FullPivot()
-    {
-        var newMatrix = Clone();
-
-        var rowPermutation = Enumerable.Range(0, newMatrix.N).Select(Generic.ConvertType<int, T>).ToArray<T>();
-        var colPermutation = Enumerable.Range(0, newMatrix.N).Select(Generic.ConvertType<int, T>).ToArray<T>();
-
-        for (var i = 0; i < newMatrix.N; i++)
-        {
-            var maxRowIndex = i;
-            var maxColIndex = i;
-            var maxValue = newMatrix[i, i];
-
-            for (var j = i; j < newMatrix.N; j++)
-                for (var k = i; k < newMatrix.N; k++)
+            // Zero out below the pivot
+            for (var j = i + 1; j < N; j++)
+            {
+                var factor = matrix[j, i] / matrix[i, i];
+                for (var k = i; k < M; k++)
                 {
-                    if (!(Math.Abs(Generic.ConvertType<T, double>(newMatrix[j, k])) > Math.Abs(Generic.ConvertType<T, double>(maxValue)))) continue;
-                    maxRowIndex = j;
-                    maxColIndex = k;
-                    maxValue = newMatrix[j, k];
+                    matrix[j, k] -= factor * matrix[i, k];
                 }
-
-            newMatrix = newMatrix.SwapRows(i, maxRowIndex);
-            newMatrix = newMatrix.SwapColumns(i, maxColIndex);
-            SwapInArray(rowPermutation, i, maxRowIndex);
-            SwapInArray(colPermutation, i, maxColIndex);
+            }
         }
 
-        return newMatrix;
+        // If full pivoting was used, reorder the columns to their original order
+        if (pivotType == MatrixPivotType.Full)
+        {
+            var originalOrderMatrix = new Matrix<T>(N, M);
+            for (var j = 0; j < M; j++)
+            {
+                var originalColIndex = Array.IndexOf(colOrder, j);
+                for (var i = 0; i < N; i++)
+                {
+                    originalOrderMatrix[i, j] = matrix[i, originalColIndex];
+                }
+            }
+            matrix = originalOrderMatrix;
+        }
+
+        return matrix;
     }
 
-    private void SwapInArray(IList<T> array, int index1, int index2)
+    public Matrix<T> GaussJordanElimination(MatrixPivotType pivotType = MatrixPivotType.None)
     {
-        (array[index1], array[index2]) = (array[index2], array[index1]);
+        var matrix = Clone();
+
+        int[] colOrder = Enumerable.Range(0, M).ToArray();
+
+        for (int i = 0; i < Math.Min(N, M); i++)
+        {
+            // Pivot
+            if (pivotType == MatrixPivotType.Full)
+            {
+                Tuple<int, int> pivotIndices = matrix.FullPivot(i, i);
+                matrix = matrix.SwapRows(i, pivotIndices.Item1);
+                matrix = matrix.SwapColumnsWithOrderTracking(i, pivotIndices.Item2, colOrder);
+            }
+            else if (pivotType == MatrixPivotType.Partial)
+            {
+                int maxRowIndex = matrix.PartialPivot(i, i);
+                matrix = matrix.SwapRows(i, maxRowIndex);
+            }
+
+            // If pivot is zero, no elimination is possible for this column
+            if (matrix[i, i] == GenericNumber<T>.FromDouble(0))
+            {
+                continue;
+            }
+
+            // Scale the pivot row so that the pivot element becomes 1
+            T pivotElement = matrix[i, i];
+            for (int k = i; k < M; k++)
+            {
+                matrix[i, k] /= pivotElement;
+            }
+
+            // Zero out above and below the pivot
+            for (int j = 0; j < N; j++)
+            {
+                if (j != i) // Skip the pivot row itself
+                {
+                    T factor = matrix[j, i];
+                    for (int k = i; k < M; k++)
+                    {
+                        matrix[j, k] -= factor * matrix[i, k];
+                    }
+                }
+            }
+        }
+
+        // If full pivoting was used, reorder the columns to their original order
+        if (pivotType == MatrixPivotType.Full)
+        {
+            var originalOrderMatrix = new Matrix<T>(N, M);
+
+            for (int j = 0; j < M; j++)
+            {
+                int originalColIndex = Array.IndexOf(colOrder, j);
+                for (int i = 0; i < N; i++)
+                {
+                    originalOrderMatrix[i, j] = matrix[i, originalColIndex];
+                }
+            }
+            matrix = originalOrderMatrix;
+        }
+
+        return matrix;
     }
+
+    private Matrix<T> SwapColumnsWithOrderTracking(int col1, int col2, int[] colOrder)
+    {
+        var matrix = Clone();
+        for (int i = 0; i < N; i++)
+        {
+            (matrix[i, col1], matrix[i, col2]) = (matrix[i, col2], matrix[i, col1]);
+        }
+        // Swap in column order tracking array as well
+        (colOrder[col1], colOrder[col2]) = (colOrder[col2], colOrder[col1]);
+
+        return matrix;
+    }
+    #endregion Support Methods
 
     #region Norms
 
