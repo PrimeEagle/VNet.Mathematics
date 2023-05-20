@@ -544,10 +544,10 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     #endregion Matrix Operations
 
     #region Decompositions
-    //public DecomposedMatrix<T> Decompose(IMatrixDecompositionAlgorithm<T> decompositionAlgorithm, bool useFullPivot = false)
-    //{
-    //    return decompositionAlgorithm.Decompose(Clone(), useFullPivot);
-    //}
+    public DecomposedMatrix<T> Decompose(IMatrixDecompositionAlgorithm<T> decompositionAlgorithm, MatrixPivotType pivotType = MatrixPivotType.None)
+    {
+        return decompositionAlgorithm.Decompose(this, pivotType);
+    }
     #endregion Decompositions
 
     #region Matrix Forms

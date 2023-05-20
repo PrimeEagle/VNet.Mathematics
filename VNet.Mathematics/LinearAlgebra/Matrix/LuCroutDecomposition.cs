@@ -7,52 +7,62 @@ namespace VNet.Mathematics.LinearAlgebra.Matrix
     {
         public DecomposedMatrix<T> Decompose(Matrix<T> matrix, MatrixPivotType pivotType = MatrixPivotType.None)
         {
-            var lowerMatrixData = new T[matrix.N, matrix.M];
-            var upperMatrixData = new T[matrix.N, matrix.M];
-
-            //matrix = pivotType switch
-            //{
-            //    MatrixPivotType.Full => matrix.FullPivot(),
-            //    MatrixPivotType.Partial => matrix.PartialPivot(),
-            //    _ => matrix
-            //};
+            var lower = new Matrix<T>(matrix.N, matrix.N);
+            var upper = new Matrix<T>(matrix.N, matrix.N);
 
             for (var i = 0; i < matrix.N; i++)
             {
-                for (var j = 0; j < matrix.N; j++)
+                switch (pivotType)
                 {
-                    if (j <= i)
+                    case MatrixPivotType.Partial:
                     {
-                        lowerMatrixData[i, j] = matrix[i, j];
-                        for (var k = 0; k < j; k++)
-                        {
-                            lowerMatrixData[i, j] -= lowerMatrixData[i, k] * upperMatrixData[k, j];
-                        }
-                        if (i == j)
-                        {
-                            upperMatrixData[i, j] = GenericNumber<T>.FromDouble(1);
-                        }
-                        else
-                        {
-                            upperMatrixData[i, j] = GenericNumber<T>.FromDouble(0);
-                        }
+                        var pivotRow = matrix.PartialPivot(i, i);
+                        if (pivotRow != i)
+                            matrix = matrix.SwapRows(i, pivotRow);
+                        break;
                     }
+                    case MatrixPivotType.Full:
+                    {
+                        var pivotIndices = matrix.FullPivot(i, i);
+                        if (pivotIndices.Item1 != i)
+                            matrix = matrix.SwapRows(i, pivotIndices.Item1);
+                        if (pivotIndices.Item2 != i)
+                            matrix = matrix.SwapColumns(i, pivotIndices.Item2);
+                        break;
+                    }
+                    case MatrixPivotType.None:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(pivotType), pivotType, null);
+                }
+
+                // Lower
+                for (var k = i; k < matrix.N; k++)
+                {
+                    var sum = GenericNumber<T>.FromDouble(0d);
+                    for (var j = 0; j < i; j++)
+                        sum += (lower[k, j] * upper[j, i]);
+
+                    lower[k, i] = matrix[k, i] - sum;
+                }
+
+                // Upper
+                for (var k = i; k < matrix.N; k++)
+                {
+                    if (i == k)
+                        upper[i, i] = GenericNumber<T>.FromDouble(1); // Diagonal values are 1 for upper
                     else
                     {
-                        upperMatrixData[j, i] = matrix[j, i];
-                        for (var k = 0; k < i; k++)
-                        {
-                            upperMatrixData[j, i] -= lowerMatrixData[j, k] * upperMatrixData[k, i];
-                        }
-                        upperMatrixData[j, i] = upperMatrixData[j, i] / lowerMatrixData[i, i];
+                        var sum = GenericNumber<T>.FromDouble(0d);
+                        for (var j = 0; j < i; j++)
+                            sum += (lower[i, j] * upper[j, k]);
+
+                        upper[i, k] = (matrix[i, k] - sum) / lower[i, i];
                     }
                 }
             }
 
-            var upperMatrix = new Matrix<T>(upperMatrixData);
-            var lowerMatrix = new Matrix<T>(upperMatrixData);
-
-            return new DecomposedMatrix<T>("Upper", upperMatrix, "Lower",  lowerMatrix);
+            return new DecomposedMatrix<T>("Upper", upper, "Lower",  lower);
         }
     }
 }
