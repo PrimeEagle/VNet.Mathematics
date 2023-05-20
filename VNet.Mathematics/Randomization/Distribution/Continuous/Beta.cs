@@ -59,7 +59,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             _gammaDistribution.Scale = 1.0d;
             var gamma2Value = _gammaDistribution.NextDouble();
 
-            return Generic.ConvertFromObject<T>(gamma1Value / (gamma1Value + gamma2Value));
+            return GenericNumber<T>.FromDouble(gamma1Value / (gamma1Value + gamma2Value));
         }
     }
 }

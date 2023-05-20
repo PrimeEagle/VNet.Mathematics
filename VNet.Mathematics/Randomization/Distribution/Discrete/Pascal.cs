@@ -37,7 +37,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Discrete
                 if (_randomGenerator.Next() < _probabilityOfSuccess)
                     successes++;
             }
-            return Generic.ConvertFromObject<T>(trials);
+            return GenericNumber<T>.FromDouble(trials);
         }
     }
 }

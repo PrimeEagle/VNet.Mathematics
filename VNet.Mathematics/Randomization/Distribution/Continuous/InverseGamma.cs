@@ -60,7 +60,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
                 throw new Exception("Division by zero: Gamma sample cannot be zero for Inverse Gamma distribution.");
             }
 
-            return Generic.ConvertFromObject<T>(1.0d / gammaSample);
+            return GenericNumber<T>.FromDouble(1.0d / gammaSample);
         }
     }
 }

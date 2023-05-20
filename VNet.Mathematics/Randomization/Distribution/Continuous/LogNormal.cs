@@ -54,7 +54,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             _gaussianDistribution.Mean = _mean;
             _gaussianDistribution.StandardDeviation = _standardDeviation;
 
-            return Generic.ConvertFromObject<T>(Math.Exp(_gaussianDistribution.NextDouble()));
+            return GenericNumber<T>.FromDouble(Math.Exp(_gaussianDistribution.NextDouble()));
         }
     }
 }

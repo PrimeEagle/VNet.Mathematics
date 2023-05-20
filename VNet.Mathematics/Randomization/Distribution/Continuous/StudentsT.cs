@@ -74,7 +74,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
 
             // if Z is a standard normal random variable and Y is a chi-square distributed random variable
             // with v degrees of freedom, then X = Z / sqrt(Y/v) has a Student's t-distribution with v degrees of freedom
-            return Generic.ConvertFromObject<T>(z / Math.Sqrt(y / _chiSquareDistribution.DegreesOfFreedom));
+            return GenericNumber<T>.FromDouble(z / Math.Sqrt(y / _chiSquareDistribution.DegreesOfFreedom));
         }
     }
 }

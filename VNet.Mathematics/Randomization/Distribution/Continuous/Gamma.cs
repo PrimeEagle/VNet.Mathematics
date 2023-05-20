@@ -85,7 +85,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
                         v = v * v * v;
                         double u = _randomGenerator.NextDouble();
                         if ((u < 1.0 - 0.0331 * (x * x) * (x * x)) || (Math.Log(u) < 0.5 * x * x + d * (1.0 - v + Math.Log(v))))
-                            return Generic.ConvertFromObject<T>(Scale * d * v);
+                            return GenericNumber<T>.FromDouble(Scale * d * v);
                     }
 
                     break;
@@ -99,7 +99,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
                         g *= _randomGenerator.NextDouble();
                     g = -Math.Log(g);
 
-                    return Generic.ConvertFromObject<T>(Scale * g);
+                    return GenericNumber<T>.FromDouble(Scale * g);
                 }
             }
         }

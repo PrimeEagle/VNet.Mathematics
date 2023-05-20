@@ -54,11 +54,11 @@ namespace VNet.Mathematics.Randomization.Distribution.Discrete
                 sum += _distribution[i];
                 if (u <= sum)
                 {
-                    return Generic.ConvertFromObject<T>(i + 1);
+                    return GenericNumber<T>.FromDouble(i + 1);
                 }
             }
 
-            return Generic.ConvertFromObject<T>(_numberOfElements);
+            return GenericNumber<T>.FromDouble(_numberOfElements);
         }
     }
 }

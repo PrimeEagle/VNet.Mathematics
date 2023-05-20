@@ -544,10 +544,10 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     #endregion Matrix Operations
 
     #region Decompositions
-    public DecomposedMatrix<T> Decompose(IMatrixDecompositionAlgorithm<T> decompositionAlgorithm, bool useFullPivot = false)
-    {
-        return decompositionAlgorithm.Decompose(Clone(), useFullPivot);
-    }
+    //public DecomposedMatrix<T> Decompose(IMatrixDecompositionAlgorithm<T> decompositionAlgorithm, bool useFullPivot = false)
+    //{
+    //    return decompositionAlgorithm.Decompose(Clone(), useFullPivot);
+    //}
     #endregion Decompositions
 
     #region Matrix Forms
@@ -675,10 +675,6 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         }
 
         return matrix;
-    }
-
-    public Matrix<T> JordanNormalForm()
-    {
     }
     #endregion Matrix Forms
 
@@ -1056,58 +1052,152 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
     #region Norms
 
-    public T FrobeniusNorm()
+    public double FrobeniusNorm()
     {
+        var sum = 0.0d;
+
+        for (var i = 0; i < N; i++)
+        {
+            for (var j = 0; j < M; j++)
+            {
+                sum += GenericNumber<T>.ToDouble(Data[i, j] * Data[i, j]);
+            }
+        }
+
+        return Math.Sqrt(sum);
     }
 
-    public T PNorm()
+    public double PNorm(double p)
     {
+        if (p < 1.0d) throw new ArgumentOutOfRangeException("p must be greater than or equal to one.");
+
+        var sum = 0.0;
+
+        for (var i = 0; i < N; i++)
+        {
+            for (var j = 0; j < M; j++)
+            {
+                sum += Math.Pow(Math.Abs(GenericNumber<T>.ToDouble(Data[i, j])), p);
+            }
+        }
+
+        return Math.Pow(sum, 1 / p);
     }
 
-    public T LpNorm()
+    public double LpNorm(double p)
     {
-        return PNorm();
+        return PNorm(p);
     }
 
-    public T HolderNorm()
+    public double HolderNorm(double p)
     {
-        return PNorm();
+        return PNorm(p);
     }
 
-    public T SchattenPNorm()
+    public double SchattenPNorm(double p)
     {
-        return PNorm();
+        return PNorm(p);
     }
 
-    public T InfinityNorm()
+    public double InfinityNorm()
     {
+        var maxRowSum = 0.0;
+
+        for (var i = 0; i < N; i++)
+        {
+            var rowSum = 0.0;
+            for (var j = 0; j < M; j++)
+            {
+                rowSum += Math.Abs(GenericNumber<T>.ToDouble(Data[i, j]));
+            }
+
+            if (rowSum > maxRowSum)
+            {
+                maxRowSum = rowSum;
+            }
+        }
+
+        return maxRowSum;
     }
 
-    public T MaximumAbsoluteRowSumNorm()
+    public double MaximumAbsoluteRowSumNorm()
     {
         return InfinityNorm();
     }
 
-    public T OneNorm()
+    public double OneNorm()
     {
+        var maxColSum = 0.0d;
+
+        for (var j = 0; j < M; j++)
+        {
+            var colSum = 0.0d;
+            for (var i = 0; i < N; i++)
+            {
+                colSum += Math.Abs(GenericNumber<T>.ToDouble(Data[i, j]));
+            }
+
+            if (colSum > maxColSum)
+            {
+                maxColSum = colSum;
+            }
+        }
+
+        return maxColSum;
     }
 
-    public T MaximumAbsoluteColumnSumNorm()
+    public double MaximumAbsoluteColumnSumNorm()
     {
         return OneNorm();
     }
 
-    public T TwoNorm()
+    public double TaxicabNorm()
     {
+        return OneNorm();
     }
 
-    public T SpectralNorm()
+    public double ManhattanNorm()
+    {
+        return OneNorm();
+    }
+
+    public double TwoNorm()
+    {
+        var tempData = new double[N, M];
+        for (var i = 0; i < N; i++)
+            for (var j = 0; j < M; j++)
+                tempData[i, j] = GenericNumber<T>.ToDouble(Data[i, j]);
+
+        alglib.rmatrixsvd(tempData, M, N, 1, 0, 2, out var w, out var u, out var vt);
+
+        return w.Max();
+    }
+
+    public double EuclidianNorm()
     {
         return TwoNorm();
     }
 
-    public T NuclearNorm()
+    public double SpectralNorm()
     {
+        return TwoNorm();
+    }
+
+    public double NuclearNorm()
+    {
+        var tempData = new double[N, M];
+        for (var i = 0; i < N; i++)
+        for (var j = 0; j < M; j++)
+            tempData[i, j] = GenericNumber<T>.ToDouble(Data[i, j]);
+
+        alglib.rmatrixsvd(tempData, M, N, 1, 0, 2, out var w, out var u, out var vt);
+
+        return w.Sum();
+    }
+
+    public double TraceNorm()
+    {
+        return NuclearNorm();
     }
 
     #endregion Norms
@@ -1165,7 +1255,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < b.N; i++)
             for (var j = 0; j < b.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(a) * b[i, j];
+                result[i, j] = GenericNumber<T>.FromInt(a) * b[i, j];
 
         return result;
     }
@@ -1176,7 +1266,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < b.N; i++)
             for (var j = 0; j < b.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(a) * b[i, j];
+                result[i, j] = GenericNumber<T>.FromUint(a) * b[i, j];
 
         return result;
     }
@@ -1187,7 +1277,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < b.N; i++)
             for (var j = 0; j < b.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(a) * b[i, j];
+                result[i, j] = GenericNumber<T>.FromLong(a) * b[i, j];
 
         return result;
     }
@@ -1198,7 +1288,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < b.N; i++)
             for (var j = 0; j < b.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(a) * b[i, j];
+                result[i, j] = GenericNumber<T>.FromUlong(a) * b[i, j];
 
         return result;
     }
@@ -1209,7 +1299,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < b.N; i++)
             for (var j = 0; j < b.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(a) * b[i, j];
+                result[i, j] = GenericNumber<T>.FromFloat(a) * b[i, j];
 
         return result;
     }
@@ -1220,7 +1310,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < b.N; i++)
             for (var j = 0; j < b.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(a) * b[i, j];
+                result[i, j] = GenericNumber<T>.FromDouble(a) * b[i, j];
 
         return result;
     }
@@ -1231,7 +1321,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < b.N; i++)
             for (var j = 0; j < b.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(a) * b[i, j];
+                result[i, j] = GenericNumber<T>.FromDecimal(a) * b[i, j];
 
         return result;
     }
@@ -1242,7 +1332,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) * a[i, j];
+                result[i, j] = GenericNumber<T>.FromInt(b) * a[i, j];
 
         return result;
     }
@@ -1253,7 +1343,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) * a[i, j];
+                result[i, j] = GenericNumber<T>.FromUint(b) * a[i, j];
 
         return result;
     }
@@ -1264,7 +1354,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) * a[i, j];
+                result[i, j] = GenericNumber<T>.FromLong(b) * a[i, j];
 
         return result;
     }
@@ -1275,7 +1365,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) * a[i, j];
+                result[i, j] = GenericNumber<T>.FromUlong(b) * a[i, j];
 
         return result;
     }
@@ -1286,7 +1376,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) * a[i, j];
+                result[i, j] = GenericNumber<T>.FromFloat(b) * a[i, j];
 
         return result;
     }
@@ -1297,7 +1387,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) * a[i, j];
+                result[i, j] = GenericNumber<T>.FromDouble(b) * a[i, j];
 
         return result;
     }
@@ -1308,7 +1398,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) * a[i, j];
+                result[i, j] = GenericNumber<T>.FromDecimal(b) * a[i, j];
 
         return result;
     }
@@ -1319,7 +1409,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) / a[i, j];
+                result[i, j] = GenericNumber<T>.FromInt(b) / a[i, j];
 
         return result;
     }
@@ -1330,7 +1420,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) / a[i, j];
+                result[i, j] = GenericNumber<T>.FromUint(b) / a[i, j];
 
         return result;
     }
@@ -1341,7 +1431,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) / a[i, j];
+                result[i, j] = GenericNumber<T>.FromLong(b) / a[i, j];
 
         return result;
     }
@@ -1352,7 +1442,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) / a[i, j];
+                result[i, j] = GenericNumber<T>.FromUlong(b) / a[i, j];
 
         return result;
     }
@@ -1363,7 +1453,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) / a[i, j];
+                result[i, j] = GenericNumber<T>.FromFloat(b) / a[i, j];
 
         return result;
     }
@@ -1374,7 +1464,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) / a[i, j];
+                result[i, j] = GenericNumber<T>.FromDouble(b) / a[i, j];
 
         return result;
     }
@@ -1385,7 +1475,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         for (var i = 0; i < a.N; i++)
             for (var j = 0; j < a.M; j++)
-                result[i, j] = Generic.ConvertFromObject<T>(b) / a[i, j];
+                result[i, j] = GenericNumber<T>.FromDecimal(b) / a[i, j];
 
         return result;
     }

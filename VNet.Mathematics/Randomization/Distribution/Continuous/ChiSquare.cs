@@ -55,7 +55,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             _gammaDistribution.Shape = DegreesOfFreedom / 2.0d;
             _gammaDistribution.Scale = 2.0;
 
-            return Generic.ConvertFromObject<T>(_gammaDistribution.NextDouble());
+            return GenericNumber<T>.FromDouble(_gammaDistribution.NextDouble());
         }
     }
 }

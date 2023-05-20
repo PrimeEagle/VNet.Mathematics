@@ -3,7 +3,7 @@ using VNet.System;
 
 namespace VNet.Mathematics.LinearAlgebra.Matrix
 {
-    public class LuCroutDecomposition<T> : IMatrixDecompositionAlgorithm<T> where T : notnull, INumber<T>
+    public class DoolittleDecomposition<T> : IMatrixDecompositionAlgorithm<T> where T : notnull, INumber<T>
     {
         public DecomposedMatrix<T> Decompose(Matrix<T> matrix, MatrixPivotType pivotType = MatrixPivotType.None)
         {
@@ -24,6 +24,7 @@ namespace VNet.Mathematics.LinearAlgebra.Matrix
                     if (j <= i)
                     {
                         lowerMatrixData[i, j] = matrix[i, j];
+
                         for (var k = 0; k < j; k++)
                         {
                             lowerMatrixData[i, j] -= lowerMatrixData[i, k] * upperMatrixData[k, j];
@@ -39,12 +40,14 @@ namespace VNet.Mathematics.LinearAlgebra.Matrix
                     }
                     else
                     {
-                        upperMatrixData[j, i] = matrix[j, i];
+                        upperMatrixData[i, j] = matrix[i, j];
+
                         for (var k = 0; k < i; k++)
                         {
-                            upperMatrixData[j, i] -= lowerMatrixData[j, k] * upperMatrixData[k, i];
+                            upperMatrixData[i, j] -= lowerMatrixData[i, k] * upperMatrixData[k, j];
                         }
-                        upperMatrixData[j, i] = upperMatrixData[j, i] / lowerMatrixData[i, i];
+
+                        upperMatrixData[i, j] = upperMatrixData[i, j] / lowerMatrixData[i, i];
                     }
                 }
             }
@@ -52,7 +55,7 @@ namespace VNet.Mathematics.LinearAlgebra.Matrix
             var upperMatrix = new Matrix<T>(upperMatrixData);
             var lowerMatrix = new Matrix<T>(upperMatrixData);
 
-            return new DecomposedMatrix<T>("Upper", upperMatrix, "Lower",  lowerMatrix);
+            return new DecomposedMatrix<T>("Upper", upperMatrix, "Lower", lowerMatrix);
         }
     }
 }

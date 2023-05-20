@@ -65,7 +65,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             double standardNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2.0 * Math.PI * u2);
 
             // scale and shift to get a Gaussian(random) variable with the given mean and standard deviation
-            return Generic.ConvertFromObject<T>(_mean + _standardDeviation * standardNormal);
+            return GenericNumber<T>.FromDouble(_mean + _standardDeviation * standardNormal);
         }
     }
 }

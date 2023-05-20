@@ -52,19 +52,19 @@ namespace VNet.Mathematics.Randomization.Distribution
         {
             if (typeof(T) == typeof(int))
             {
-                return Generic.ConvertFromObject<T>(_randomGenerator.Next());
+                return GenericNumber<T>.FromDouble(_randomGenerator.Next());
             }
             else if (typeof(T) == typeof(long))
             {
-                return Generic.ConvertFromObject<T>(_randomGenerator.NextInt64());
+                return GenericNumber<T>.FromDouble(_randomGenerator.NextInt64());
             }
             else if (typeof(T) == typeof(float))
             {
-                return Generic.ConvertFromObject<T>(_randomGenerator.NextSingle());
+                return GenericNumber<T>.FromDouble(_randomGenerator.NextSingle());
             }
             else if (typeof(T) == typeof(double))
             {
-                return Generic.ConvertFromObject<T>(_randomGenerator.NextDouble());
+                return GenericNumber<T>.FromDouble(_randomGenerator.NextDouble());
             }
             else
             {

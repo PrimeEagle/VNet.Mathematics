@@ -25,7 +25,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Discrete
         {
             double u = _randomGenerator.Next();
 
-            return Generic.ConvertFromObject<T>(Math.Ceiling(Math.Log(1 - u) / Math.Log(1 - _probabilityOfSuccess)));
+            return GenericNumber<T>.FromDouble(Math.Ceiling(Math.Log(1 - u) / Math.Log(1 - _probabilityOfSuccess)));
         }
     }
 }

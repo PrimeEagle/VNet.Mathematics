@@ -30,7 +30,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
         {
             double u = _randomGenerator.Next();
 
-            return Generic.ConvertFromObject<T>(Math.Pow(1 - u, -1 / _exponent));
+            return GenericNumber<T>.FromDouble(Math.Pow(1 - u, -1 / _exponent));
         }
     }
 }

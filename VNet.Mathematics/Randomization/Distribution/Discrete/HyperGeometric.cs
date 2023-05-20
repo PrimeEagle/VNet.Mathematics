@@ -39,7 +39,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Discrete
                 _numberOfItems--;
             }
 
-            return Generic.ConvertFromObject<T>(success);
+            return GenericNumber<T>.FromDouble(success);
         }
     }
 }

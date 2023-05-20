@@ -11,8 +11,8 @@ namespace VNet.Mathematics.Randomization.Generation
         public new List<TSeed> Seeds { get; init; }
         public new TResult MinValue { get; set; }
         public new TResult MaxValue { get; set; }
-        int IRandomGenerationAlgorithm.MinValue { get => Convert.ToInt32(MinValue); set => MinValue = Generic.ConvertFromObject<TResult>(value); }
-        int IRandomGenerationAlgorithm.MaxValue { get => Convert.ToInt32(MaxValue); set => MaxValue = Generic.ConvertFromObject<TResult>(value); }
+        int IRandomGenerationAlgorithm.MinValue { get => Convert.ToInt32(MinValue); set => MinValue = GenericNumber<TResult>.FromDouble(value); }
+        int IRandomGenerationAlgorithm.MaxValue { get => Convert.ToInt32(MaxValue); set => MaxValue = GenericNumber<TResult>.FromDouble(value); }
         protected uint NumberOfSeeds = 1;
 
 
@@ -90,7 +90,7 @@ namespace VNet.Mathematics.Randomization.Generation
         {
             var hash = BitConverter.ToInt32(SHA1.HashData(Encoding.UTF8.GetBytes(seed)));
 
-            return Generic.ConvertFromObject<TSeed>(hash);
+            return GenericNumber<TSeed>.FromDouble(hash);
         }
 
         public virtual TResult Next()
@@ -101,11 +101,11 @@ namespace VNet.Mathematics.Randomization.Generation
         // ReSharper disable once MemberCanBeProtected.Global
         public virtual TResult Next(TResult maxValue)
         {
-            var tempMinValue = Generic.ConvertFromObject<TResult>(0);
-            var tempMaxValue = Generic.ConvertFromObject<TResult>(maxValue);
+            var tempMinValue = GenericNumber<TResult>.FromDouble(0);
+            var tempMaxValue = maxValue;
 
-            MinValue = Generic.ConvertFromObject<TResult>(0);
-            MaxValue = Generic.ConvertFromObject<TResult>(maxValue);
+            MinValue = GenericNumber<TResult>.FromDouble(0);
+            MaxValue = maxValue;
 
             var result = Next();
 
@@ -118,11 +118,11 @@ namespace VNet.Mathematics.Randomization.Generation
         // ReSharper disable once MemberCanBeProtected.Global
         public virtual TResult Next(TResult minValue, TResult maxValue)
         {
-            var tempMinValue = Generic.ConvertFromObject<TResult>(minValue);
-            var tempMaxValue = Generic.ConvertFromObject<TResult>(maxValue);
+            var tempMinValue = minValue;
+            var tempMaxValue = maxValue;
 
-            MinValue = Generic.ConvertFromObject<TResult>(0);
-            MaxValue = Generic.ConvertFromObject<TResult>(maxValue);
+            MinValue = GenericNumber<TResult>.FromDouble(0);
+            MaxValue = maxValue;
 
             var result = Next();
 
@@ -165,12 +165,12 @@ namespace VNet.Mathematics.Randomization.Generation
 
         public virtual long NextInt64(long maxValue)
         {
-            return Convert.ToInt64(Next(Generic.ConvertFromObject<TResult>(maxValue)));
+            return Convert.ToInt64(Next(GenericNumber<TResult>.FromDouble(maxValue)));
         }
 
         public new long NextInt64(long minValue, long maxValue)
         {
-            return Convert.ToInt64(Next(Generic.ConvertFromObject<TResult>(minValue), Generic.ConvertFromObject<TResult>(maxValue)));
+            return Convert.ToInt64(Next(GenericNumber<TResult>.FromDouble(minValue), GenericNumber<TResult>.FromDouble(maxValue)));
         }
 
         private static TResult GetMaxValue()
@@ -208,7 +208,7 @@ namespace VNet.Mathematics.Randomization.Generation
 
             for (var i = 0; i < numberOfSeeds; i++)
             {
-                result.Add(Generic.ConvertFromObject<TSeed>(DateTime.Now.Ticks + 1));
+                result.Add(GenericNumber<TSeed>.FromDouble(DateTime.Now.Ticks + 1));
             }
 
             return result;
@@ -221,12 +221,12 @@ namespace VNet.Mathematics.Randomization.Generation
 
         int IRandomGenerationAlgorithm.Next(int maxValue)
         {
-            return Convert.ToInt32(Next(Generic.ConvertFromObject<TResult>(maxValue)));
+            return Convert.ToInt32(Next(GenericNumber<TResult>.FromDouble(maxValue)));
         }
 
         int IRandomGenerationAlgorithm.Next(int minValue, int maxValue)
         {
-            return Convert.ToInt32(Next(Generic.ConvertFromObject<TResult>(minValue), Generic.ConvertFromObject<TResult>(maxValue)));
+            return Convert.ToInt32(Next(GenericNumber<TResult>.FromDouble(minValue), GenericNumber<TResult>.FromDouble(maxValue)));
         }
     }
 }

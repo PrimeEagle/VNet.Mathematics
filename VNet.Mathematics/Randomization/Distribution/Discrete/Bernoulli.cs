@@ -23,6 +23,6 @@ public class Bernoulli : RandomDistributionBase, IDiscreteRandomDistributionAlgo
 
     protected override T NextValue<T>()
     {
-        return _randomGenerator.NextDouble() < _probabilityOfSuccess ? Generic.ConvertFromObject<T>(1) : Generic.ConvertFromObject<T>(0);
+        return _randomGenerator.NextDouble() < _probabilityOfSuccess ? GenericNumber<T>.FromDouble(1) : GenericNumber<T>.FromDouble(0);
     }
 }

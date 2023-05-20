@@ -51,7 +51,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Discrete
                 Reset();
             }
 
-            if (_numberOfCalls != 1) return Generic.ConvertFromObject<T>(_counts[_numberOfCalls - 1]);
+            if (_numberOfCalls != 1) return GenericNumber<T>.FromDouble(_counts[_numberOfCalls - 1]);
             for (var i = 0; i < _numberOfTrials; i++)
             {
                 var u = _randomGenerator.NextDouble();
@@ -66,7 +66,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Discrete
                 }
             }
 
-            return Generic.ConvertFromObject<T>(_counts[_numberOfCalls - 1]);
+            return GenericNumber<T>.FromDouble(_counts[_numberOfCalls - 1]);
         }
 
         public void Reset()

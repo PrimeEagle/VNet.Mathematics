@@ -40,7 +40,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             var standardCauchy = Math.Tan(Math.PI * (u1 - 0.5));
 
             // scale and shift to get a Cauchy(random) variable with the given location and scale parameters
-            return Generic.ConvertFromObject<T>(_location + _scale * standardCauchy);
+            return GenericNumber<T>.FromDouble(_location + _scale * standardCauchy);
         }
     }
 }

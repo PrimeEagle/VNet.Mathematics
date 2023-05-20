@@ -27,7 +27,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Discrete
 
         protected override T NextValue<T>()
         {
-            return Generic.ConvertFromObject<T>(_minimum + (_randomGenerator.NextInt64() * (_maximum - _minimum + 1)));
+            return GenericNumber<T>.FromDouble(_minimum + (_randomGenerator.NextInt64() * (_maximum - _minimum + 1)));
         }
     }
 }

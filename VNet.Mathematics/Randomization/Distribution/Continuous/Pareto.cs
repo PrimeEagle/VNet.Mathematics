@@ -35,7 +35,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
         {
             var u = _randomGenerator.NextDouble();
 
-            return Generic.ConvertFromObject<T>(_scale / Math.Pow(u, 1 / _shape));
+            return GenericNumber<T>.FromDouble(_scale / Math.Pow(u, 1 / _shape));
         }
     }
 }

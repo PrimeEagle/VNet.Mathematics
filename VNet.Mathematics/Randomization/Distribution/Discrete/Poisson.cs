@@ -27,9 +27,9 @@ public class Poisson : RandomDistributionBase, IDiscreteRandomDistributionAlgori
         {
             k++;
             var u = NextRandomValue<T>();
-            p *= Generic.ConvertType<T, double>(u);
+            p *= GenericNumber<T>.ToDouble(u);
         } while (p > l);
 
-        return Generic.ConvertFromObject<T>(k - 1);
+        return GenericNumber<T>.FromDouble(k - 1);
     }
 }
