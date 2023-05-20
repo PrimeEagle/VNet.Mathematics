@@ -191,7 +191,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
         return result;
     }
-    
+
     #region Matrix Creation
     public Matrix<T> Random(IRandomGenerationAlgorithm randomAlgorithm)
     {
@@ -356,8 +356,29 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         return trace;
     }
 
-    public T Eigenvalue()
+    public List<T> Eigenvalue()
     {
+        if (!IsSquare)
+        {
+            throw new ArgumentException("Matrix must be square.");
+        }
+
+        var matrix = Clone();
+
+        var tempData = new double[N, M];
+        for (var i = 0; i < N; i++)
+            for (var j = 0; j < M; j++)
+                tempData[i, j] = GenericNumber<T>.ToDouble(matrix[i, j]);
+
+        //*0, eigenvectors are not returned;
+        //*1, right eigenvectors are returned;
+        //*2, left eigenvectors are returned;
+        //*3, both left and right eigenvectors are returned.
+        const int vectorsNeeded = 0;
+
+        alglib.rmatrixevd(tempData, N, vectorsNeeded, out var eigenvalues, out _, out _, out _);
+
+        return eigenvalues.Select(GenericNumber<T>.FromDouble).ToList<T>();
     }
     #endregion Scalar Operations
 
@@ -367,8 +388,8 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         var newMatrixData = new T[N, M];
 
         for (var i = 0; i < N; i++)
-        for (var j = 0; j < M; j++)
-            newMatrixData[i, j] = Data[i, j];
+            for (var j = 0; j < M; j++)
+                newMatrixData[i, j] = Data[i, j];
 
         return new Matrix<T>(newMatrixData);
     }
@@ -378,8 +399,8 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         var transpose = new Matrix<T>(M, N);
 
         for (var i = 0; i < N; i++)
-        for (var j = 0; j < M; j++)
-            transpose[j, i] = Data[i, j];
+            for (var j = 0; j < M; j++)
+                transpose[j, i] = Data[i, j];
 
         return transpose;
     }
@@ -389,11 +410,11 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
         var majors = new Matrix<T>(N, N);
 
         for (var i = 0; i < N; i++)
-        for (var j = 0; j < N; j++)
-        {
-            var minor = Minor(i, j);
-            majors[i, j] = minor.Determinant();
-        }
+            for (var j = 0; j < N; j++)
+            {
+                var minor = Minor(i, j);
+                majors[i, j] = minor.Determinant();
+            }
 
         return majors;
     }
@@ -423,6 +444,32 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
 
     public Matrix<T> Eigenvector()
     {
+        if (!IsSquare)
+        {
+            throw new ArgumentException("Matrix must be square.");
+        }
+
+        var matrix = Clone();
+
+        double[,] tempData = new double[N, M];
+        for (var i = 0; i < N; i++)
+            for (var j = 0; j < M; j++)
+                tempData[i, j] = GenericNumber<T>.ToDouble(matrix[i, j]);
+
+        //*0, eigenvectors are not returned;
+        //*1, right eigenvectors are returned;
+        //*2, left eigenvectors are returned;
+        //*3, both left and right eigenvectors are returned.
+        const int vectorsNeeded = 3;
+
+        alglib.rmatrixevd(tempData, N, vectorsNeeded, out _, out _, out var eigenvectors, out _);
+
+        var result = new Matrix<T>(eigenvectors.GetLength(0), eigenvectors.GetLength(1));
+        for (var i = 0; i < N; i++)
+            for (var j = 0; j < M; j++)
+                result[i, j] = GenericNumber<T>.FromDouble(eigenvectors[i, j]);
+
+        return result;
     }
 
     public Matrix<T> HadamardProduct(Matrix<T> matrix)
