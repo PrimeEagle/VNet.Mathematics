@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="LinearAlgebra\Vector\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="alglib.net" Version="3.19.0" />
   </ItemGroup>
 
