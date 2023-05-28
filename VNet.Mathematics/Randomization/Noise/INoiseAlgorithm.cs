@@ -1,6 +1,6 @@
 ﻿namespace VNet.Mathematics.Randomization.Noise
 {
-    internal interface INoiseAlgorithm
+    internal interface INoiseAlgorithm : IRandomizationAlgorithm
     {
         public float[] Generate();
 

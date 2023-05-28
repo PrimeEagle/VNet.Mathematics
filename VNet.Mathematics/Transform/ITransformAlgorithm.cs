@@ -1,6 +1,6 @@
 ﻿namespace VNet.Mathematics.Transform
 {
-    public interface ITransformAlgorithm
+    public interface ITransformAlgorithm : IMathematicsAlgorithm
     {
     }
 }

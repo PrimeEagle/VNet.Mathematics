@@ -2,7 +2,7 @@
 
 namespace VNet.Mathematics.Randomization.Generation;
 
-public interface IRandomGenerationAlgorithm
+public interface IRandomGenerationAlgorithm : IRandomizationAlgorithm
 {
     public int MinValue { get; set; }
     public int MaxValue { get; set; }
