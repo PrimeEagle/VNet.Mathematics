@@ -18,7 +18,9 @@ public interface IRandomGenerationAlgorithm : IRandomizationAlgorithm
     public long NextInt64(long minValue, long maxValue);
 }
 
-public interface IRandomGenerationAlgorithm<out TSeed, TResult> : IRandomGenerationAlgorithm where TSeed : struct, INumber<TSeed> where TResult : struct, INumber<TResult>
+public interface IRandomGenerationAlgorithm<out TSeed, TResult> : IRandomGenerationAlgorithm 
+                                                                  where TSeed : notnull, INumber<TSeed> 
+                                                                  where TResult : notnull, INumber<TResult>
 {
     public new TResult MinValue { get; set; }
     public new TResult MaxValue { get; set; }
