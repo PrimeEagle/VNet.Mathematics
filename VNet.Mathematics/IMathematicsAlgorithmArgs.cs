@@ -1,4 +1,4 @@
-﻿using VNet.System;
+﻿using VNet.System.Algorithms;
 
 namespace VNet.Mathematics
 {

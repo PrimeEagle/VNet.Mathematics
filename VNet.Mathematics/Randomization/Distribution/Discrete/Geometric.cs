@@ -1,5 +1,5 @@
 ﻿using VNet.Mathematics.Randomization.Generation;
-using VNet.System;
+using VNet.System.Conversion;
 
 namespace VNet.Mathematics.Randomization.Distribution.Discrete
 {

@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using VNet.System;
+using VNet.System.Conversion;
 
 namespace VNet.Mathematics.LinearAlgebra.Matrix
 {

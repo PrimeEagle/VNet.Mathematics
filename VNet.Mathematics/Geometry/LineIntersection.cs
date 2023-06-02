@@ -1,4 +1,4 @@
-﻿using VNet.System;
+﻿using VNet.System.Extensions;
 
 namespace VNet.Mathematics.Geometry
 {

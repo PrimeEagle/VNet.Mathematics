@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
-using VNet.System;
+using VNet.System.Conversion;
 
 // ReSharper disable MemberCanBePrivate.Global
 
