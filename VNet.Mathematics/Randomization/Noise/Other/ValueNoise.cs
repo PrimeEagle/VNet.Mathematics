@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Other;
 // Value noise is a type of noise commonly used in procedural texture generation, such as for terrain generation in computer graphics.
 // It's created by interpolating random values on a grid. Creating value noise typically requires a grid of random values and an interpolation
 // method.The interpolation can be linear, cosine, cubic, or another method depending on the desired smoothness.

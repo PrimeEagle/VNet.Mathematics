@@ -1,31 +1,28 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Color;
 
-public class OrangeNoise : INoiseAlgorithm
+// Gray noise is a variation of pink noise with a more balanced power spectral density distribution across the frequency spectrum.It is designed to have an equal
+// amount of energy in each octave, resulting in a pleasing and natural sound.
+public class GrayNoise : INoiseAlgorithm
 {
     private INoiseAlgorithm _blueNoise;
     private INoiseAlgorithm _whiteNoise;
-    private INoiseAlgorithm _grayNoise;
     private double _blueNoiseWeight;
     private double _whiteNoiseWeight;
-    private double _grayNoiseWeight;
 
-    public OrangeNoise(double blueNoiseWeight = 0.5, double whiteNoiseWeight = 0.3, double grayNoiseWeight = 0.2)
+    public GrayNoise(double blueNoiseWeight = 0.5, double whiteNoiseWeight = 0.5)
     {
         _blueNoise = new BlueNoise();
         _whiteNoise = new WhiteNoise();
-        _grayNoise = new GrayNoise();
         _blueNoiseWeight = blueNoiseWeight;
         _whiteNoiseWeight = whiteNoiseWeight;
-        _grayNoiseWeight = grayNoiseWeight;
     }
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
         var blueNoiseData = _blueNoise.Generate(args);
         var whiteNoiseData = _whiteNoise.Generate(args);
-        var grayNoiseData = _grayNoise.Generate(args);
 
         var result = new double[args.Height, args.Width];
         for (int i = 0; i < args.Height; i++)
@@ -34,10 +31,9 @@ public class OrangeNoise : INoiseAlgorithm
             {
                 var blueNoiseValue = blueNoiseData[i, j];
                 var whiteNoiseValue = whiteNoiseData[i, j];
-                var grayNoiseValue = grayNoiseData[i, j];
 
-                var orangeNoiseValue = (_blueNoiseWeight * blueNoiseValue) + (_whiteNoiseWeight * whiteNoiseValue) + (_grayNoiseWeight * grayNoiseValue);
-                result[i, j] = orangeNoiseValue * args.Scale;
+                var grayNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue;
+                result[i, j] = grayNoiseValue * args.Scale;
             }
         }
 
@@ -46,7 +42,7 @@ public class OrangeNoise : INoiseAlgorithm
 
     public double GenerateSingleSample(INoiseAlgorithmArgs args)
     {
-        // Orange noise is generated for the entire grid, so generating a single sample is not applicable.
+        // Gray noise is generated for the entire grid, so generating a single sample is not applicable.
         throw new NotImplementedException();
     }
 }

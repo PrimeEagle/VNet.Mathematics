@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Other;
 // Perlin noise is a gradient noise developed by Ken Perlin in 1983. It is a procedural texture primitive, a type of gradient noise used by visual
 // effects artists to increase the appearance of realism in computer graphics. Perlin noise is extensively used in computer graphics for
 // effects like fire, smoke and clouds. It's also frequently used to generate textures when memory is extremely limited, such as in 3D graphic development.
@@ -44,8 +44,8 @@ public class PerlinNoise : INoiseAlgorithm
         int y1 = y0 + 1;
 
         // Determine interpolation weights
-        double sx = x - (double)x0;
-        double sy = y - (double)y0;
+        double sx = x - x0;
+        double sy = y - y0;
 
         // Interpolate between grid point gradients
         double n0, n1, ix0, ix1, value;

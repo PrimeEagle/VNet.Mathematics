@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Other;
 // Improved Perlin Noise is a more complex variation of Perlin Noise. The algorithm is based on the same principles,
 // but with different gradient and interpolation functions, providing more pleasing results.
 public class ImprovedPerlinNoise : INoiseAlgorithm

@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Other;
 // Voronoi noise, also known as Worley noise or cellular noise, is a type of coherent noise that can be used to generate procedural textures.
 // The simplest way of implementing Voronoi noise is by using a Voronoi tessellation algorithm which involves creating a grid of random feature
 // points and assigning every point in the space to the nearest feature point.

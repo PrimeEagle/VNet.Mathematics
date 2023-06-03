@@ -4,7 +4,8 @@ using System.ComponentModel;
 using System.Net.NetworkInformation;
 using System.Text;
 using VNet.Mathematics.Filter;
-namespace VNet.Mathematics.Randomization.Noise;
+
+namespace VNet.Mathematics.Randomization.Noise.Color;
 // Red noise, also known as Brown or Brownian noise, is similar to pink noise in that it also decreases in power as frequency increases.However,
 // while pink noise decreases power by 3 dB per octave, red noise decreases power by 6 dB per octave (or 20 dB per decade). This means it's essentially
 // "more pink" than pink noise. Generating red noise is typically done by integrating white noise, or in other words, each sample of red noise is

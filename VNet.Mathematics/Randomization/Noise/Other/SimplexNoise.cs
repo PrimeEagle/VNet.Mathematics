@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Other;
 // Simplex noise is an improvement over Perlin noise, developed by Ken Perlin himself to address some of the limitations of the Perlin noise algorithm.
 // Simplex noise has a lower computational complexity and does not have visible directional artifacts. Implementing Simplex noise in C# is quite
 // complex, involving the computation of gradients in simplex space, the mapping of points from the input space to simplex space, and the addition

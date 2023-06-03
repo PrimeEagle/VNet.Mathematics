@@ -1,7 +1,8 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
-public class IndigoNoise : INoiseAlgorithm
+namespace VNet.Mathematics.Randomization.Noise.Color;
+
+public class OrangeNoise : INoiseAlgorithm
 {
     private INoiseAlgorithm _blueNoise;
     private INoiseAlgorithm _whiteNoise;
@@ -10,7 +11,7 @@ public class IndigoNoise : INoiseAlgorithm
     private double _whiteNoiseWeight;
     private double _grayNoiseWeight;
 
-    public IndigoNoise(double blueNoiseWeight = 0.2, double whiteNoiseWeight = 0.4, double grayNoiseWeight = 0.4)
+    public OrangeNoise(double blueNoiseWeight = 0.5, double whiteNoiseWeight = 0.3, double grayNoiseWeight = 0.2)
     {
         _blueNoise = new BlueNoise();
         _whiteNoise = new WhiteNoise();
@@ -35,8 +36,8 @@ public class IndigoNoise : INoiseAlgorithm
                 var whiteNoiseValue = whiteNoiseData[i, j];
                 var grayNoiseValue = grayNoiseData[i, j];
 
-                var indigoNoiseValue = (_blueNoiseWeight * blueNoiseValue) + (_whiteNoiseWeight * whiteNoiseValue) + (_grayNoiseWeight * grayNoiseValue);
-                result[i, j] = indigoNoiseValue * args.Scale;
+                var orangeNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue + _grayNoiseWeight * grayNoiseValue;
+                result[i, j] = orangeNoiseValue * args.Scale;
             }
         }
 
@@ -45,7 +46,7 @@ public class IndigoNoise : INoiseAlgorithm
 
     public double GenerateSingleSample(INoiseAlgorithmArgs args)
     {
-        // Indigo noise is generated for the entire grid, so generating a single sample is not applicable.
+        // Orange noise is generated for the entire grid, so generating a single sample is not applicable.
         throw new NotImplementedException();
     }
 }

@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Other;
 // Fractal noise, also known as Fractional Brownian Motion (fBm), is a way of combining multiple layers of noise to create a more complex and
 // rich output. Each layer of noise is typically called an "octave", and each octave is given a frequency and an amplitude.
 public class FractalNoise : INoiseAlgorithm

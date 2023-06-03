@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Color;
 
 public class YellowNoise : INoiseAlgorithm
 {
@@ -36,7 +36,7 @@ public class YellowNoise : INoiseAlgorithm
                 var whiteNoiseValue = whiteNoiseData[i, j];
                 var grayNoiseValue = grayNoiseData[i, j];
 
-                var yellowNoiseValue = (_blueNoiseWeight * blueNoiseValue) + (_whiteNoiseWeight * whiteNoiseValue) + (_grayNoiseWeight * grayNoiseValue);
+                var yellowNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue + _grayNoiseWeight * grayNoiseValue;
                 result[i, j] = yellowNoiseValue * args.Scale;
             }
         }

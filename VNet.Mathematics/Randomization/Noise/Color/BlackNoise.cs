@@ -1,27 +1,27 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Color;
 
-public class GreenNoise : INoiseAlgorithm
+public class BlackNoise : INoiseAlgorithm
 {
-    private INoiseAlgorithm _blueNoise;
+    private INoiseAlgorithm _whiteNoise;
 
-    public GreenNoise()
+    public BlackNoise()
     {
-        _blueNoise = new BlueNoise();
+        _whiteNoise = new WhiteNoise();
     }
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        var blueNoiseData = _blueNoise.Generate(args);
+        var whiteNoiseData = _whiteNoise.Generate(args);
 
         var result = new double[args.Height, args.Width];
         for (int i = 0; i < args.Height; i++)
         {
             for (int j = 0; j < args.Width; j++)
             {
-                var blueNoiseValue = blueNoiseData[i, j];
-                result[i, j] = blueNoiseValue * args.Scale;
+                var whiteNoiseValue = whiteNoiseData[i, j];
+                result[i, j] = whiteNoiseValue * args.Scale;
             }
         }
 
@@ -30,7 +30,7 @@ public class GreenNoise : INoiseAlgorithm
 
     public double GenerateSingleSample(INoiseAlgorithmArgs args)
     {
-        // Green noise is generated for the entire grid, so generating a single sample is not applicable.
+        // Black noise is generated for the entire grid, so generating a single sample is not applicable.
         throw new NotImplementedException();
     }
 }

@@ -2,7 +2,7 @@
 
 using VNet.Mathematics.Filter;
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Color;
 
 // Pink noise, also known as 1/f noise, has equal energy in all octaves (or similar log bundles) of frequency. In terms of power at a constant
 // bandwidth, pink noise falls off at 3 dB per octave. Generating pink noise is more complicated than white or violet noise, as it requires more

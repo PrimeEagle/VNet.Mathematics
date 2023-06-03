@@ -2,7 +2,8 @@
 
 using System.Numerics;
 using VNet.Mathematics.Filter;
-namespace VNet.Mathematics.Randomization.Noise;
+
+namespace VNet.Mathematics.Randomization.Noise.Color;
 
 public class BlueNoise : INoiseAlgorithm
 {

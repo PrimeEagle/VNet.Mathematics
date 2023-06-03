@@ -1,6 +1,6 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-namespace VNet.Mathematics.Randomization.Noise;
+namespace VNet.Mathematics.Randomization.Noise.Other;
 // Gradient perturb noise is a type of noise where the coordinates of each point are slightly altered (or "perturbed") using another noise function
 // before being input into the main noise function. This has the effect of distorting the output in an interesting way.
 public class GradientPerturbNoise : INoiseAlgorithm
