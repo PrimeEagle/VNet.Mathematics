@@ -4,12 +4,12 @@ namespace VNet.Mathematics.Randomization.Noise.Color;
 
 public class YellowNoise : INoiseAlgorithm
 {
-    private INoiseAlgorithm _blueNoise;
-    private INoiseAlgorithm _whiteNoise;
-    private INoiseAlgorithm _grayNoise;
-    private double _blueNoiseWeight;
-    private double _whiteNoiseWeight;
-    private double _grayNoiseWeight;
+    private readonly INoiseAlgorithm _blueNoise;
+    private readonly INoiseAlgorithm _whiteNoise;
+    private readonly INoiseAlgorithm _grayNoise;
+    private readonly double _blueNoiseWeight;
+    private readonly double _whiteNoiseWeight;
+    private readonly double _grayNoiseWeight;
 
     public YellowNoise(double blueNoiseWeight = 0.7, double whiteNoiseWeight = 0.3, double grayNoiseWeight = 0.0)
     {
@@ -28,9 +28,8 @@ public class YellowNoise : INoiseAlgorithm
         var grayNoiseData = _grayNoise.Generate(args);
 
         var result = new double[args.Height, args.Width];
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        for (var i = 0; i < args.Height; i++)
+            for (var j = 0; j < args.Width; j++)
             {
                 var blueNoiseValue = blueNoiseData[i, j];
                 var whiteNoiseValue = whiteNoiseData[i, j];
@@ -39,7 +38,6 @@ public class YellowNoise : INoiseAlgorithm
                 var yellowNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue + _grayNoiseWeight * grayNoiseValue;
                 result[i, j] = yellowNoiseValue * args.Scale;
             }
-        }
 
         return result;
     }

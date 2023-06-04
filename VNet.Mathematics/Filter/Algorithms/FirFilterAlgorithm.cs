@@ -1,49 +1,54 @@
 ﻿// ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBeMadeStatic.Local
-#pragma warning disable CA1822
-namespace VNet.Mathematics.Filter;
 
-public class FirFilterAlgorithm : IFilterAlgorithm
+#pragma warning disable CA1822
+using VNet.Mathematics.Filter.Arguments;
+
+namespace VNet.Mathematics.Filter.Algorithms;
+
+public class FirFilterAlgorithm : FilterAlgorithmBase
 {
-    public double[] Apply(double[] input, IFilterArgs args)
+    public FirFilterAlgorithm(IFirFilterArgs args) : base(args)
     {
-        var coefficients = args.BandType switch
+    }
+
+    public override double[] Apply(double[] input)
+    {
+        var coefficients = Args.BandType switch
         {
-            BandType.LowPass => MathNet.Filtering.FIR.FirCoefficients.LowPass(args.SampleRate, args.CutoffFrequency),
-            BandType.HighPass => MathNet.Filtering.FIR.FirCoefficients.HighPass(args.SampleRate, args.CutoffFrequency),
-            BandType.BandPass => MathNet.Filtering.FIR.FirCoefficients.BandPass(args.SampleRate, ((IBandPassFilterArgs)args).LowCutoffFrequency, ((IBandPassFilterArgs)args).HighCutoffFrequency),
-            BandType.Notch => MathNet.Filtering.FIR.FirCoefficients.BandStop(args.SampleRate, ((INotchFilterArgs)args).LowCutoffFrequency, ((INotchFilterArgs)args).HighCutoffFrequency),
+            AlgorithmBandType.LowPass => MathNet.Filtering.FIR.FirCoefficients.LowPass(((IFirLowPassFilterArgs)Args).SamplingRate, ((IFirLowPassFilterArgs)Args).CutoffFrequency),
+            AlgorithmBandType.HighPass => MathNet.Filtering.FIR.FirCoefficients.HighPass(((IFirHighPassFilterArgs)Args).SamplingRate, ((IFirHighPassFilterArgs)Args).CutoffFrequency),
+            AlgorithmBandType.BandPass => MathNet.Filtering.FIR.FirCoefficients.BandPass(((IFirBandPassFilterArgs)Args).SamplingRate, ((IFirBandPassFilterArgs)Args).CutoffLowFrequency, ((IFirBandPassFilterArgs)Args).CutoffHighFrequency),
+            AlgorithmBandType.BandStop => MathNet.Filtering.FIR.FirCoefficients.BandStop(((IFirBandStopFilterArgs)Args).SamplingRate, ((IFirBandStopFilterArgs)Args).CutoffLowFrequency, ((IFirBandStopFilterArgs)Args).CutoffHighFrequency),
             _ => throw new ArgumentException("Invalid filter type.")
         };
 
-
         // Apply the filter
-        
-
-        ApplyWindowFunction(coefficients, args);
+        ApplyWindowFunction(coefficients);
         var filter = new MathNet.Filtering.FIR.OnlineFirFilter(coefficients);
         var result = filter.ProcessSamples(input);
 
         return result;
     }
 
-    public bool IsValid(IFilterArgs args)
+    public override bool IsValid()
     {
-        var valid = args.SampleRate > 0;
-        if (valid) valid &= args.CutoffFrequency > 0;
-        if (valid && args.BandType == BandType.BandPass) valid &= ((IBandPassFilterArgs)args).LowCutoffFrequency > 0;
-        if (valid && args.BandType == BandType.BandPass) valid &= ((IBandPassFilterArgs)args).HighCutoffFrequency > 0;
-        if (valid && args.BandType == BandType.Notch) valid &= ((INotchFilterArgs)args).LowCutoffFrequency > 0;
-        if (valid && args.BandType == BandType.Notch) valid &= ((INotchFilterArgs)args).HighCutoffFrequency > 0;
+        var valid = ((IFirFilterArgs)Args).SamplingRate > 0;
+        if (valid && Args.BandType == AlgorithmBandType.LowPass) valid &= ((IFirLowPassFilterArgs)Args).CutoffFrequency > 0;
+        if (valid && Args.BandType == AlgorithmBandType.HighPass) valid &= ((IFirLowPassFilterArgs)Args).CutoffFrequency > 0;
+        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IFirBandPassFilterArgs)Args).CutoffLowFrequency > 0;
+        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IFirBandPassFilterArgs)Args).CutoffHighFrequency > 0;
+        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IFirBandStopFilterArgs)Args).CutoffLowFrequency > 0;
+        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IFirBandStopFilterArgs)Args).CutoffHighFrequency > 0;
 
         return valid;
     }
 
-    private void ApplyWindowFunction(IList<double> coefficients, IFilterArgs args)
+    private void ApplyWindowFunction(IList<double> coefficients)
     {
         MathNet.Filtering.Windowing.Window window;
 
-        switch (((IFirFilterArgs)args).WindowFunction)
+        switch (((IFirFilterArgs)Args).WindowFunction)
         {
             case WindowFunction.BartlettHann:
                 window = new MathNet.Filtering.Windowing.BartlettHannWindow();
@@ -67,7 +72,7 @@ public class FirFilterAlgorithm : IFilterAlgorithm
                 window = new MathNet.Filtering.Windowing.FlatTopWindow();
                 break;
             case WindowFunction.Gauss:
-                window = new MathNet.Filtering.Windowing.GaussWindow(((IFirFilterArgs)args).Sigma);
+                window = new MathNet.Filtering.Windowing.GaussWindow(((IFirFilterArgs)Args).Sigma);
                 break;
             case WindowFunction.Hamming:
                 window = new MathNet.Filtering.Windowing.HammingWindow();
@@ -95,7 +100,7 @@ public class FirFilterAlgorithm : IFilterAlgorithm
         window.Width = coefficients.Count;
         var windowArr = window.CopyToArray();
 
-        for (var i = 0; i < coefficients.Count; i++) 
+        for (var i = 0; i < coefficients.Count; i++)
             coefficients[i] *= windowArr[i];
     }
 }

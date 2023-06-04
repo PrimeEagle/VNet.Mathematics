@@ -10,7 +10,6 @@ namespace VNet.Mathematics.Randomization.Noise
         public int QuantizeLevels { get; set; }
         public double Scale { get; set; }
         public IRandomDistributionAlgorithm RandomDistributionAlgorithm { get; set; }
-        public IFilter? Filter { get; set; }
-        public IFilterArgs? FilterArgs { get; set; }
+        public IFilter? OutputFilter { get; set; }
     }
 }

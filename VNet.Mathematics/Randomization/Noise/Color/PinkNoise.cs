@@ -14,7 +14,7 @@ public class PinkNoise : INoiseAlgorithm
     private readonly WhiteNoise _whiteNoise;
     private double[] _state;
 
-    public PinkNoise()
+    public PinkNoise(INoiseAlgorithmArgs args):base(args)
     {
         _whiteNoise = new WhiteNoise();
         _state = new double[1]; // Assuming that the filter will be an IIR filter of order 1.
@@ -42,7 +42,7 @@ public class PinkNoise : INoiseAlgorithm
 
         args.FilterArgs = new FilterParameters()
         {
-            SampleRate = 44100, // Assuming the sample rate is 44100 samples per second
+            SamplingRate = 44100, // Assuming the sample rate is 44100 samples per second
             CutoffFrequency = 5000, // A cutoff frequency of 5000 Hz is a common choice for pink noise
             Order = 1, // A first order filter for simplicity
             FilterType = FilterType.IIR,
@@ -50,12 +50,12 @@ public class PinkNoise : INoiseAlgorithm
             WindowFunction = WindowFunction.None // Window function is typically not used with IIR filters
         };
 
-        args.Filter = new LowPassFilter(new IirFilterAlgorithm());
+        args.OutputFilter = new LowPassFilter(new IirFilterAlgorithm());
 
-        if (args.Filter is not null && args.FilterArgs is not null && args.Filter.IsValid(args.FilterArgs))
+        if (args.OutputFilter is not null && args.FilterArgs is not null && args.OutputFilter.IsValid(args.FilterArgs))
         {
             _state[0] = sample; // The new white noise sample is added to the state.
-            var filteredSamples = args.Filter.Filter(_state, args.FilterArgs);
+            var filteredSamples = args.OutputFilter.Filter(_state, args.FilterArgs);
             if (filteredSamples.Length > 0)
             {
                 sample = filteredSamples[0];

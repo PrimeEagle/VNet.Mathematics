@@ -2,6 +2,6 @@
 
 public interface IFilter
 {
-    public double[] Filter(double[] input, IFilterArgs args);
-    public bool IsValid(IFilterArgs args);
+    public double[] Filter(double[] input);
+    public bool IsValid();
 }

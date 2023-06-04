@@ -18,17 +18,17 @@ public class BlueNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int args.Width = args.Width;
+        int args.Height = args.Height;
 
-        List<Vector2> samples = GenerateBlueNoiseSamples(width, height);
+        List<Vector2> samples = GenerateBlueNoiseSamples(args.Width, args.Height);
 
-        double[,] result = new double[height, width];
-        for (int i = 0; i < height; i++)
+        double[,] result = new double[args.Height, args.Width];
+        for (int i = 0; i < args.Height; i++)
         {
-            for (int j = 0; j < width; j++)
+            for (int j = 0; j < args.Width; j++)
             {
-                Vector2 samplePoint = new Vector2((float)j / width, (float)i / height);
+                Vector2 samplePoint = new Vector2((float)j / args.Width, (float)i / args.Height);
                 double minDistance = double.MaxValue;
 
                 foreach (Vector2 sample in samples)
@@ -50,11 +50,11 @@ public class BlueNoise : INoiseAlgorithm
         throw new NotImplementedException();
     }
 
-    private List<Vector2> GenerateBlueNoiseSamples(int width, int height)
+    private List<Vector2> GenerateBlueNoiseSamples(int args.Width, int args.Height)
     {
         double cellSize = _radius / Math.Sqrt(2);
-        int gridWidth = (int)Math.Ceiling(width / cellSize);
-        int gridHeight = (int)Math.Ceiling(height / cellSize);
+        int gridWidth = (int)Math.Ceiling(args.Width / cellSize);
+        int gridHeight = (int)Math.Ceiling(args.Height / cellSize);
 
         int[,] grid = new int[gridHeight, gridWidth];
         List<Vector2> samples = new List<Vector2>();

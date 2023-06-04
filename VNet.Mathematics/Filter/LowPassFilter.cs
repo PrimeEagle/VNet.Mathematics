@@ -1,24 +1,15 @@
-﻿namespace VNet.Mathematics.Filter;
+﻿using VNet.Mathematics.Filter.Arguments;
 
-public class LowPassFilter : ILowPassFilter
+namespace VNet.Mathematics.Filter;
+
+public class LowPassFilter : FilterBase, ILowPassFilter
 {
-    private readonly IFilterAlgorithm _filterAlgorithm;
-
-    public LowPassFilter(IFilterAlgorithm filterAlgorithm)
+    public LowPassFilter(IFilterArgs args) : base(args)
     {
-        _filterAlgorithm = filterAlgorithm;
     }
 
-    public double[] Filter(double[] input, IFilterArgs args)
+    public override bool IsValid()
     {
-        if (!IsValid(args)) throw new ArgumentException("Parameters are not configured correctly.");
-        return _filterAlgorithm.Apply(input, args);
-    }
-
-    public bool IsValid(IFilterArgs args)
-    {
-        var valid = _filterAlgorithm.IsValid(args);
-
-        return valid;
+        return base.IsValid() && Args.BandType == BandType.LowPass;
     }
 }

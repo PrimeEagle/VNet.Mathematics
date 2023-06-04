@@ -1,6 +1,7 @@
 ﻿// ReSharper disable UnusedMember.Global
 
 using VNet.Mathematics.Filter;
+using VNet.Mathematics.Filter.Arguments;
 
 namespace VNet.Mathematics.Randomization.Noise.Other;
 // Octave band noise refers to noise that is divided into distinct frequency bands according to octave intervals. This allows for analysis

@@ -2,7 +2,9 @@
 {
     public interface INoiseAlgorithm : IRandomizationAlgorithm
     {
-        public double[,] Generate(INoiseAlgorithmArgs args);
-        public double GenerateSingleSample(INoiseAlgorithmArgs args);
+        public double[,] GenerateRaw();
+        public double[,] Generate();
+        public double GenerateSingleSampleRaw();
+        public double GenerateSingleSample();
     }
 }

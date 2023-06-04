@@ -20,17 +20,17 @@ public class CrimsonNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int args.Width = args.Width;
+        int args.Height = args.Height;
 
-        double[,] result = new double[height, width];
+        double[,] result = new double[args.Height, args.Width];
 
         double[,] redNoiseData = _redNoise.Generate(args);
         double[,] purpleNoiseData = _purpleNoise.Generate(args);
 
-        for (int i = 0; i < height; i++)
+        for (int i = 0; i < args.Height; i++)
         {
-            for (int j = 0; j < width; j++)
+            for (int j = 0; j < args.Width; j++)
             {
                 double redNoiseValue = redNoiseData[i, j];
                 double purpleNoiseValue = purpleNoiseData[i, j];
