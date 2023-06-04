@@ -1,7 +1,7 @@
 ﻿// ReSharper disable UnusedMember.Global
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
-public class IndigoNoise : INoiseAlgorithm
+public class IndigoNoise : NoiseBase
 {
     private INoiseAlgorithm _blueNoise;
     private INoiseAlgorithm _whiteNoise;

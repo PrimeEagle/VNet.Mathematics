@@ -6,7 +6,7 @@ using VNet.Mathematics.Filter;
 namespace VNet.Mathematics.Randomization.Noise.Color;
 // Cyan noise is a term used to describe noise with a power spectral density that increases at a rate between blue noise and white noise.
 // It lies between the two in terms of its frequency distribution
-public class CyanNoise : INoiseAlgorithm
+public class CyanNoise : NoiseBase
 {
     private INoiseAlgorithm _blueNoise;
     private INoiseAlgorithm _greenNoise;

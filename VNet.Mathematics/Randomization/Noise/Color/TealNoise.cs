@@ -3,7 +3,7 @@
 namespace VNet.Mathematics.Randomization.Noise.Color;
 // Teal noise is a term used to describe noise with a power spectral density that increases at a rate higher than blue noise.
 // It emphasizes higher frequencies more than blue noise.
-public class TealNoise : INoiseAlgorithm
+public class TealNoise : NoiseBase
 {
     private INoiseAlgorithm _baseNoise;
     private double _scale;

@@ -4,7 +4,7 @@ namespace VNet.Mathematics.Randomization.Noise.Color;
 
 // Gray noise is a variation of pink noise with a more balanced power spectral density distribution across the frequency spectrum.It is designed to have an equal
 // amount of energy in each octave, resulting in a pleasing and natural sound.
-public class GrayNoise : INoiseAlgorithm
+public class GrayNoise : NoiseBase
 {
     private INoiseAlgorithm _blueNoise;
     private INoiseAlgorithm _whiteNoise;

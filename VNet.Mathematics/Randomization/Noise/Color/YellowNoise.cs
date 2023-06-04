@@ -2,7 +2,7 @@
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
-public class YellowNoise : INoiseAlgorithm
+public class YellowNoise : NoiseBase
 {
     private readonly INoiseAlgorithm _blueNoise;
     private readonly INoiseAlgorithm _whiteNoise;

@@ -2,7 +2,7 @@
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
-public class GreenNoise : INoiseAlgorithm
+public class GreenNoise : NoiseBase
 {
     private INoiseAlgorithm _blueNoise;
 

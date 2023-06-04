@@ -3,7 +3,7 @@
 namespace VNet.Mathematics.Randomization.Noise.Color;
 // Gold noise, sometimes referred to as golden noise, is a term used to describe noise with a power spectral density that increases at a
 // rate higher than pink noise. It exhibits a higher emphasis on higher frequencies compared to pink noise.
-public class GoldNoise : INoiseAlgorithm
+public class GoldNoise : NoiseBase
 {
     private INoiseAlgorithm _orangeNoise;
     private INoiseAlgorithm _brownNoise;

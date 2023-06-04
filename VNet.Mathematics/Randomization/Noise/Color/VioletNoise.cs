@@ -8,7 +8,7 @@ namespace VNet.Mathematics.Randomization.Noise.Color;
 // Violet noise, also known as differentiated white noise, is characterized by a power spectral density that increases 6 dB per octave with
 // increasing frequency (density proportional to f^2) over a finite frequency range. In other words, it has more power at higher frequencies.
 // To generate violet noise, we can first generate white noise and then apply a high-pass filter or differentiation process.
-public class VioletNoise : INoiseAlgorithm
+public class VioletNoise : NoiseBase
 {
     private readonly WhiteNoise _whiteNoise;
     private readonly double[] _state;

@@ -5,7 +5,7 @@ using VNet.Mathematics.Filter;
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
-public class BlueNoise : INoiseAlgorithm
+public class BlueNoise : NoiseBase
 {
     private double _radius;
     private int _maxAttempts;

@@ -3,7 +3,7 @@
 namespace VNet.Mathematics.Randomization.Noise.Color;
 // Crimson noise is a term occasionally used to describe noise with a power spectral density that increases at a rate higher than
 // red (brown) noise. It emphasizes higher frequencies more than red noise.
-public class CrimsonNoise : INoiseAlgorithm
+public class CrimsonNoise : NoiseBase
 {
     private INoiseAlgorithm _redNoise;
     private INoiseAlgorithm _purpleNoise;

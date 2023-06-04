@@ -2,7 +2,7 @@
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
 // The term "brown noise" can also be used in non-audio contexts to describe noise with a power spectral density that decreases as the frequency increases.
-public class BrownNoise : INoiseAlgorithm
+public class BrownNoise : NoiseBase
 {
     private double _previousValue;
     private double _scale;

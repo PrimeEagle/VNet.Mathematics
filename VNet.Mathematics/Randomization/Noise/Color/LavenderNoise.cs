@@ -3,7 +3,7 @@
 namespace VNet.Mathematics.Randomization.Noise.Color;
 // Lavender noise is a term used to describe noise with a power spectral density that increases at a rate of 3 dB per octave. It lies between
 // pink noise and white noise in terms of its frequency distribution.
-public class LavenderNoise : INoiseAlgorithm
+public class LavenderNoise : NoiseBase
 {
     private INoiseAlgorithm _whiteNoise;
     private INoiseAlgorithm _pinkNoise;

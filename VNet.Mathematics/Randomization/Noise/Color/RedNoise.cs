@@ -10,7 +10,7 @@ namespace VNet.Mathematics.Randomization.Noise.Color;
 // while pink noise decreases power by 3 dB per octave, red noise decreases power by 6 dB per octave (or 20 dB per decade). This means it's essentially
 // "more pink" than pink noise. Generating red noise is typically done by integrating white noise, or in other words, each sample of red noise is
 // the sum of the current white noise sample and the previous red noise sample.
-public class RedNoise : INoiseAlgorithm
+public class RedNoise : NoiseBase
 {
     private readonly WhiteNoise _whiteNoise;
     private double _lastSample = 0;

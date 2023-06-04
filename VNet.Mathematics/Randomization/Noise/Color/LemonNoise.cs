@@ -3,7 +3,7 @@
 namespace VNet.Mathematics.Randomization.Noise.Color;
 //  Lemon noise is a term used to describe noise with a power spectral density that increases at a rate higher than white noise.
 // It emphasizes higher frequencies more than white noise.
-public class LemonNoise : INoiseAlgorithm
+public class LemonNoise : NoiseBase
 {
     private INoiseAlgorithm _baseNoise;
     private double _scale;

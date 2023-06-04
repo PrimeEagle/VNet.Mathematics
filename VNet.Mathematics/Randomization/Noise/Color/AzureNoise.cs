@@ -4,7 +4,7 @@ namespace VNet.Mathematics.Randomization.Noise.Color;
 
 // Azure noise, also known as sky-blue noise, is a term used to describe noise with a power spectral density that increases at a
 // rate higher than blue noise. It emphasizes higher frequencies more than blue noise.
-public class AzureNoise : INoiseAlgorithm
+public class AzureNoise : NoiseBase
 {
     private readonly INoiseAlgorithm _blueNoise;
     private readonly INoiseAlgorithm _violetNoise;

@@ -9,7 +9,7 @@ namespace VNet.Mathematics.Randomization.Noise.Color;
 // advanced signal processing techniques.A common method to generate pink noise is using IIR (Infinite Impulse Response) filters, but it
 // involves quite a complex logic. Here is a simple approximation in C#, using the Stochastic Difference Equation method, often known as the
 // IIR Filter method, or the Stochastic Difference Equation.
-public class PinkNoise : INoiseAlgorithm
+public class PinkNoise : NoiseBase
 {
     private readonly WhiteNoise _whiteNoise;
     private double[] _state;
