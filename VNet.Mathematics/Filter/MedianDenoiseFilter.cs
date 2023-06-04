@@ -4,11 +4,11 @@ using VNet.Mathematics.Filter.Arguments;
 
 namespace VNet.Mathematics.Filter
 {
-    internal class FirLowPassFilter : FilterBase
+    internal class MedianDenoiseFilter : FilterBase
     {
-        public FirLowPassFilter(IFirLowPassFilterArgs args) : base(args)
+        public MedianDenoiseFilter(IMedianFilterArgs args) : base(args)
         {
-            Algorithm = new FirFilterAlgorithm(AlgorithmBandType.LowPass, args);
+            Algorithm = new MedianFilterAlgorithm(AlgorithmBandType.Denoise, args);
         }
 
         public override bool IsValid()

@@ -4,11 +4,11 @@ using VNet.Mathematics.Filter.Arguments;
 
 namespace VNet.Mathematics.Filter
 {
-    internal class FirLowPassFilter : FilterBase
+    internal class FirHighPassFilter : FilterBase
     {
-        public FirLowPassFilter(IFirLowPassFilterArgs args) : base(args)
+        public FirHighPassFilter(IFirHighPassFilterArgs args) : base(args)
         {
-            Algorithm = new FirFilterAlgorithm(AlgorithmBandType.LowPass, args);
+            Algorithm = new FirFilterAlgorithm(AlgorithmBandType.HighPass, args);
         }
 
         public override bool IsValid()

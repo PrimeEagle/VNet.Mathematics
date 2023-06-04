@@ -6,6 +6,7 @@
         HighPass,
         BandPass,
         BandStop,
-        Notch
+        Notch,
+        Denoise
     }
 }

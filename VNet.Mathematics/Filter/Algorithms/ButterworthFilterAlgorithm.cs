@@ -3,20 +3,19 @@
 // ReSharper disable SuggestBaseTypeForParameterInConstructor
 
 #pragma warning disable CA1822
-using MathNet.Filtering;
 using VNet.Mathematics.Filter.Arguments;
 
 namespace VNet.Mathematics.Filter.Algorithms;
 
 public class ButterworthFilterAlgorithm : FilterAlgorithmBase
 {
-    public ButterworthFilterAlgorithm(IButterworthFilterArgs args) : base(args)
+    public ButterworthFilterAlgorithm(AlgorithmBandType bandType, IButterworthFilterArgs args) : base(bandType, args)
     {
     }
 
     public override double[] Apply(double[] input)
     {
-        var coefficients = Args.BandType switch
+        var coefficients = BandType switch
         {
             AlgorithmBandType.LowPass => MathNet.Filtering.Butterworth.IirCoefficients.LowPass(((IButterworthLowPassFilterArgs)Args).PassBandFrequency, ((IButterworthLowPassFilterArgs)Args).StopBandFrequency, ((IButterworthFilterArgs)Args).PassBandRipple, ((IButterworthFilterArgs)Args).StopBandAttenuation),
             AlgorithmBandType.HighPass => MathNet.Filtering.Butterworth.IirCoefficients.HighPass(((IButterworthLowPassFilterArgs)Args).StopBandFrequency, ((IButterworthHighPassFilterArgs)Args).PassBandFrequency, ((IButterworthFilterArgs)Args).PassBandRipple, ((IButterworthFilterArgs)Args).StopBandAttenuation),
@@ -46,31 +45,31 @@ public class ButterworthFilterAlgorithm : FilterAlgorithmBase
     {
         var valid = ((IButterworthFilterArgs)Args).PassBandRipple > 0;
         if (valid && ((IButterworthFilterArgs) Args).StopBandAttenuation > 0) ;
-        if (valid && Args.BandType == AlgorithmBandType.LowPass) valid &= ((IButterworthLowPassFilterArgs)Args).PassBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.HighPass) valid &= ((IButterworthLowPassFilterArgs)Args).PassBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.LowPass) valid &= ((IButterworthLowPassFilterArgs)Args).StopBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.HighPass) valid &= ((IButterworthLowPassFilterArgs)Args).StopBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.LowPass) valid &= ((IButterworthLowPassFilterArgs)Args).PassBandRipple > 0;
-        if (valid && Args.BandType == AlgorithmBandType.HighPass) valid &= ((IButterworthLowPassFilterArgs)Args).StopBandAttenuation > 0;
+        if (valid && BandType == AlgorithmBandType.LowPass) valid &= ((IButterworthLowPassFilterArgs)Args).PassBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.HighPass) valid &= ((IButterworthLowPassFilterArgs)Args).PassBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.LowPass) valid &= ((IButterworthLowPassFilterArgs)Args).StopBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.HighPass) valid &= ((IButterworthLowPassFilterArgs)Args).StopBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.LowPass) valid &= ((IButterworthLowPassFilterArgs)Args).PassBandRipple > 0;
+        if (valid && BandType == AlgorithmBandType.HighPass) valid &= ((IButterworthLowPassFilterArgs)Args).StopBandAttenuation > 0;
 
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).LowPassBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).HighPassBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).LowStopBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).HighStopBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).PassBandRipple > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).StopBandAttenuation > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).LowPassBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).HighPassBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).LowStopBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).HighStopBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).PassBandRipple > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IButterworthBandPassFilterArgs)Args).StopBandAttenuation > 0;
 
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandPassFilterArgs)Args).LowPassBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandPassFilterArgs)Args).HighPassBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).LowStopBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).HighStopBandFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).PassBandRipple > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).StopBandAttenuation > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandPassFilterArgs)Args).LowPassBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandPassFilterArgs)Args).HighPassBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).LowStopBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).HighStopBandFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).PassBandRipple > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IButterworthBandStopFilterArgs)Args).StopBandAttenuation > 0;
 
-        if (valid && Args.BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).CentralFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).Q > 0;
-        if (valid && Args.BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).PassBandRipple > 0;
-        if (valid && Args.BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).StopBandAttenuation > 0;
+        if (valid && BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).CentralFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).Q > 0;
+        if (valid && BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).PassBandRipple > 0;
+        if (valid && BandType == AlgorithmBandType.Notch) valid &= ((IButterworthNotchFilterArgs)Args).StopBandAttenuation > 0;
 
         return valid;
     }

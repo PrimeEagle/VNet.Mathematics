@@ -8,13 +8,13 @@ namespace VNet.Mathematics.Filter.Algorithms;
 
 public class IirFilterAlgorithm : FilterAlgorithmBase
 {
-    public IirFilterAlgorithm(IIirFilterArgs args) : base(args)
+    public IirFilterAlgorithm(AlgorithmBandType bandType, IIirFilterArgs args) : base(bandType, args)
     {
     }
 
     public override double[] Apply(double[] input)
     {
-        var coefficients = Args.BandType switch
+        var coefficients = BandType switch
         {
             AlgorithmBandType.LowPass => MathNet.Filtering.IIR.IirCoefficients.LowPass(((IIirLowPassFilterArgs)Args).SamplingRate, ((IIirLowPassFilterArgs)Args).CutoffFrequency, ((IIirLowPassFilterArgs)Args).Bandwidth),
             AlgorithmBandType.HighPass => MathNet.Filtering.IIR.IirCoefficients.HighPass(((IIirHighPassFilterArgs)Args).SamplingRate, ((IIirHighPassFilterArgs)Args).CutoffFrequency, ((IIirLowPassFilterArgs)Args).Bandwidth),
@@ -33,14 +33,14 @@ public class IirFilterAlgorithm : FilterAlgorithmBase
     public override bool IsValid()
     {
         var valid = ((IIirFilterArgs)Args).SamplingRate > 0;
-        if (valid && Args.BandType == AlgorithmBandType.LowPass) valid &= ((IIirLowPassFilterArgs)Args).CutoffFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.HighPass) valid &= ((IIirLowPassFilterArgs)Args).CutoffFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.LowPass) valid &= ((IIirLowPassFilterArgs)Args).Bandwidth > 0;
-        if (valid && Args.BandType == AlgorithmBandType.HighPass) valid &= ((IIirLowPassFilterArgs)Args).Bandwidth > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IIirBandPassFilterArgs)Args).CutoffLowFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IIirBandPassFilterArgs)Args).CutoffHighFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IIirBandStopFilterArgs)Args).CutoffLowFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IIirBandStopFilterArgs)Args).CutoffHighFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.LowPass) valid &= ((IIirLowPassFilterArgs)Args).CutoffFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.HighPass) valid &= ((IIirLowPassFilterArgs)Args).CutoffFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.LowPass) valid &= ((IIirLowPassFilterArgs)Args).Bandwidth > 0;
+        if (valid && BandType == AlgorithmBandType.HighPass) valid &= ((IIirLowPassFilterArgs)Args).Bandwidth > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IIirBandPassFilterArgs)Args).CutoffLowFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IIirBandPassFilterArgs)Args).CutoffHighFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IIirBandStopFilterArgs)Args).CutoffLowFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IIirBandStopFilterArgs)Args).CutoffHighFrequency > 0;
 
         return valid;
     }

@@ -8,13 +8,13 @@ namespace VNet.Mathematics.Filter.Algorithms;
 
 public class FirFilterAlgorithm : FilterAlgorithmBase
 {
-    public FirFilterAlgorithm(IFirFilterArgs args) : base(args)
+    public FirFilterAlgorithm(AlgorithmBandType bandType, IFirFilterArgs args) : base(bandType, args)
     {
     }
 
     public override double[] Apply(double[] input)
     {
-        var coefficients = Args.BandType switch
+        var coefficients = BandType switch
         {
             AlgorithmBandType.LowPass => MathNet.Filtering.FIR.FirCoefficients.LowPass(((IFirLowPassFilterArgs)Args).SamplingRate, ((IFirLowPassFilterArgs)Args).CutoffFrequency),
             AlgorithmBandType.HighPass => MathNet.Filtering.FIR.FirCoefficients.HighPass(((IFirHighPassFilterArgs)Args).SamplingRate, ((IFirHighPassFilterArgs)Args).CutoffFrequency),
@@ -34,12 +34,12 @@ public class FirFilterAlgorithm : FilterAlgorithmBase
     public override bool IsValid()
     {
         var valid = ((IFirFilterArgs)Args).SamplingRate > 0;
-        if (valid && Args.BandType == AlgorithmBandType.LowPass) valid &= ((IFirLowPassFilterArgs)Args).CutoffFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.HighPass) valid &= ((IFirLowPassFilterArgs)Args).CutoffFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IFirBandPassFilterArgs)Args).CutoffLowFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandPass) valid &= ((IFirBandPassFilterArgs)Args).CutoffHighFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IFirBandStopFilterArgs)Args).CutoffLowFrequency > 0;
-        if (valid && Args.BandType == AlgorithmBandType.BandStop) valid &= ((IFirBandStopFilterArgs)Args).CutoffHighFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.LowPass) valid &= ((IFirLowPassFilterArgs)Args).CutoffFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.HighPass) valid &= ((IFirLowPassFilterArgs)Args).CutoffFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IFirBandPassFilterArgs)Args).CutoffLowFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandPass) valid &= ((IFirBandPassFilterArgs)Args).CutoffHighFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IFirBandStopFilterArgs)Args).CutoffLowFrequency > 0;
+        if (valid && BandType == AlgorithmBandType.BandStop) valid &= ((IFirBandStopFilterArgs)Args).CutoffHighFrequency > 0;
 
         return valid;
     }
