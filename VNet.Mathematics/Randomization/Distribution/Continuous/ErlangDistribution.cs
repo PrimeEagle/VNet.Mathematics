@@ -3,13 +3,13 @@ using VNet.System.Conversion;
 
 namespace VNet.Mathematics.Randomization.Distribution.Continuous
 {
-    public class InverseGamma : RandomDistributionBase, IContinuousRandomDistributionAlgorithm
+    public class ErlangDistribution : RandomDistributionBase, IContinuousRandomDistributionAlgorithm
     {
         private readonly double _shape;
         private readonly double _scale;
         private readonly IGammaDistributionAlgorithm _gammaDistribution;
 
-        public InverseGamma(double shape, double scale) : base()
+        public ErlangDistribution(double shape, double scale) : base()
         {
             if (shape < 0d) throw new ArgumentOutOfRangeException(nameof(shape), "Must be a positive number.");
             if (scale < 0d) throw new ArgumentOutOfRangeException(nameof(scale), "Must be a positive number.");
@@ -19,7 +19,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             _gammaDistribution = new GammaDistribution(_randomGenerator);
         }
 
-        public InverseGamma(IRandomGenerationAlgorithm randomGenerator, double shape, double scale) : base(randomGenerator)
+        public ErlangDistribution(IRandomGenerationAlgorithm randomGenerator, double shape, double scale) : base(randomGenerator)
         {
             if (shape < 0d) throw new ArgumentOutOfRangeException(nameof(shape), "Must be a positive number.");
             if (scale < 0d) throw new ArgumentOutOfRangeException(nameof(scale), "Must be a positive number.");
@@ -29,7 +29,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             _gammaDistribution = new GammaDistribution(randomGenerator);
         }
 
-        public InverseGamma(double shape, double scale, IGammaDistributionAlgorithm gammaDistribution) : base()
+        public ErlangDistribution(double shape, double scale, IGammaDistributionAlgorithm gammaDistribution) : base()
         {
             if (shape < 0d) throw new ArgumentOutOfRangeException(nameof(shape), "Must be a positive number.");
             if (scale < 0d) throw new ArgumentOutOfRangeException(nameof(scale), "Must be a positive number.");
@@ -39,7 +39,7 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
             _gammaDistribution = gammaDistribution;
         }
 
-        public InverseGamma(IRandomGenerationAlgorithm randomGenerator, double shape, double scale, IGammaDistributionAlgorithm gammaDistribution) : base(randomGenerator)
+        public ErlangDistribution(IRandomGenerationAlgorithm randomGenerator, double shape, double scale, IGammaDistributionAlgorithm gammaDistribution) : base(randomGenerator)
         {
             if (shape < 0d) throw new ArgumentOutOfRangeException(nameof(shape), "Must be a positive number.");
             if (scale < 0d) throw new ArgumentOutOfRangeException(nameof(scale), "Must be a positive number.");
@@ -52,15 +52,9 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
         protected override T NextValue<T>()
         {
             _gammaDistribution.Shape = _shape;
-            _gammaDistribution.Scale = _scale;
-            double gammaSample = _gammaDistribution.NextDouble();
+            _gammaDistribution.Scale = 1.0d / _scale;
 
-            if (gammaSample == 0)
-            {
-                throw new Exception("Division by zero: Gamma sample cannot be zero for Inverse Gamma distribution.");
-            }
-
-            return GenericNumber<T>.FromDouble(1.0d / gammaSample);
+            return GenericNumber<T>.FromDouble(_gammaDistribution.NextDouble());
         }
     }
 }

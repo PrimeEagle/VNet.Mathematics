@@ -11,7 +11,7 @@ namespace VNet.Mathematics.Randomization.Distribution
 
         protected RandomDistributionBase()
         {
-            _randomGenerator = new DotNet();
+            _randomGenerator = new DotNetGenerator();
             _randomGenerator.MinValue = 0;
             _randomGenerator.MaxValue = 2;
         }

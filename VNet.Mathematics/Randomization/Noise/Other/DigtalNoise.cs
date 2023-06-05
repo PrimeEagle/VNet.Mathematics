@@ -31,6 +31,6 @@ public class DigitalNoise : NoiseBase
 
     public override double GenerateSingleSampleRaw()
     {
-        throw new NotImplementedException("Diamond-Square noise is generated for the entire grid, so generating a single sample is not applicable.");
+        throw new NotImplementedException("Digital noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using VNet.Mathematics.LinearAlgebra.Matrix.Algorithms;
 using VNet.Mathematics.Randomization.Generation;
 using VNet.System.Conversion;
 
@@ -231,7 +232,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     public Matrix<T> Random(int n, int m)
     {
         var result = new Matrix<T>(n, m);
-        IRandomGenerationAlgorithm randomGeneration = new DotNet();
+        IRandomGenerationAlgorithm randomGeneration = new DotNetGenerator();
 
         return result.Random(randomGeneration);
     }
@@ -239,7 +240,7 @@ public class Matrix<T> : IEquatable<Matrix<T>> where T : notnull, INumber<T>
     public Matrix<T> Random()
     {
         var result = Clone();
-        IRandomGenerationAlgorithm randomGeneration = new DotNet();
+        IRandomGenerationAlgorithm randomGeneration = new DotNetGenerator();
 
         return result.Random(randomGeneration);
     }

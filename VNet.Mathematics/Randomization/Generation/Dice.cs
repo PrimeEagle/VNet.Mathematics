@@ -6,7 +6,7 @@
 
         public Dice()
         {
-            RandomGenerator = new DotNet();
+            RandomGenerator = new DotNetGenerator();
         }
 
         public Dice(IRandomGenerationAlgorithm randomGenerator)
