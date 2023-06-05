@@ -10,25 +10,25 @@ public class PerlinNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        _grid = new double[args.Height, args.Width];
+        _grid = new double[Args.Height, Args.Width];
 
         // Fill the grid with random values between -1 and 1.
-        for (var i = 0; i < args.Height; i++)
+        for (var i = 0; i < Args.Height; i++)
         {
-            for (var j = 0; j < args.Width; j++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                _grid[i, j] = 2 * args.RandomDistributionAlgorithm.NextDouble() - 1;
+                _grid[i, j] = 2 * Args.RandomDistributionAlgorithm.NextDouble() - 1;
             }
         }
 
-        var result = new double[args.Height, args.Width];
+        var result = new double[Args.Height, Args.Width];
 
         // Calculate Perlin noise value for each point.
-        for (var i = 0; i < args.Height; i++)
+        for (var i = 0; i < Args.Height; i++)
         {
-            for (var j = 0; j < args.Width; j++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                var sample = GenerateSingleSample(args, i / (double)args.Height, j / (double)args.Width);
+                var sample = GenerateSingleSample(args, i / (double)Args.Height, j / (double)Args.Width);
                 result[i, j] = sample;
             }
         }

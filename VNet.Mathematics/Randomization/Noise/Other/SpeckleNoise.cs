@@ -15,8 +15,8 @@ public class SpeckleNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -24,8 +24,8 @@ public class SpeckleNoise : INoiseAlgorithm
         {
             for (int j = 0; j < width; j++)
             {
-                double randomValue = (args.RandomDistributionAlgorithm.NextDouble() * 2 - 1) * _intensity;
-                result[i, j] = args.Scale * randomValue;
+                double randomValue = (Args.RandomDistributionAlgorithm.NextDouble() * 2 - 1) * _intensity;
+                result[i, j] = Args.Scale * randomValue;
             }
         }
 

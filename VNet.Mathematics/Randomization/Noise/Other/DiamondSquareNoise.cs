@@ -21,8 +21,8 @@ public class DiamondSquareNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         // Ensure the grid size is a power of 2 plus 1
         int gridSize = GetNextPowerOfTwo(Math.Max(width, height)) + 1;

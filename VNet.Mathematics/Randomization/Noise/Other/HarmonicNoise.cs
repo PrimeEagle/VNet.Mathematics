@@ -17,8 +17,8 @@ public class HarmonicNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
         int numHarmonics = _frequencies.Length;
 
         double[,] result = new double[height, width];
@@ -33,12 +33,12 @@ public class HarmonicNoise : INoiseAlgorithm
                 {
                     double frequency = _frequencies[h];
                     double amplitude = _amplitudes[h];
-                    double phase = 2.0 * Math.PI * frequency * (i + j) / args.SampleRate;
+                    double phase = 2.0 * Math.PI * frequency * (i + j) / Args.SampleRate;
 
                     noiseValue += amplitude * Math.Sin(phase);
                 }
 
-                result[i, j] = noiseValue * args.Scale;
+                result[i, j] = noiseValue * Args.Scale;
             }
         }
 

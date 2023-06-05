@@ -20,9 +20,9 @@ public class ChirpNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
-        double sampleRate = args.SampleRate;
+        int width = Args.Width;
+        int height = Args.Height;
+        double sampleRate = Args.SampleRate;
 
         double[,] result = new double[height, width];
         double timeStep = 1.0 / sampleRate;

@@ -19,8 +19,8 @@ public class LSystemsNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         string noiseString = "F";
         StringBuilder noiseBuilder = new StringBuilder(noiseString);
@@ -71,7 +71,7 @@ public class LSystemsNoise : INoiseAlgorithm
             }
         }
 
-        Normalize(result, args.QuantizeLevels, args.Scale);
+        Normalize(result, Args.QuantizeLevels, Args.Scale);
         return result;
     }
 

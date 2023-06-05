@@ -19,14 +19,14 @@ public class CellularAutomatonNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
         int[,] grid = new int[height, width];
 
         // Initialize the grid with random values
-        InitializeGrid(grid, args.RandomDistributionAlgorithm);
+        InitializeGrid(grid, Args.RandomDistributionAlgorithm);
 
         // Perform the cellular automaton simulation
         for (int i = 0; i < _iterations; i++)
@@ -35,7 +35,7 @@ public class CellularAutomatonNoise : INoiseAlgorithm
         }
 
         // Convert the binary grid to noise values
-        ConvertGridToNoise(grid, result, args.QuantizeLevels, args.Scale);
+        ConvertGridToNoise(grid, result, Args.QuantizeLevels, Args.Scale);
         return result;
     }
 

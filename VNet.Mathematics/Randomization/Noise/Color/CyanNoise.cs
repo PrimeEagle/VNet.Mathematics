@@ -1,52 +1,64 @@
 ﻿// ReSharper disable UnusedMember.Global
-
-using System.Numerics;
-using VNet.Mathematics.Filter;
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
+
 // Cyan noise is a term used to describe noise with a power spectral density that increases at a rate between blue noise and white noise.
 // It lies between the two in terms of its frequency distribution
 public class CyanNoise : NoiseBase
 {
-    private INoiseAlgorithm _blueNoise;
-    private INoiseAlgorithm _greenNoise;
-    private double _blueNoiseWeight;
-    private double _greenNoiseWeight;
+    private readonly INoiseAlgorithm _blueNoise;
+    private readonly INoiseAlgorithm _greenNoise;
+    private readonly double _blueNoiseWeight;
+    private readonly double _greenNoiseWeight;
 
-    public CyanNoise(double blueNoiseWeight = 0.5, double greenNoiseWeight = 0.5)
+    public CyanNoise(ICyanNoiseAlgorithmArgs args) : base(args)
     {
-        _blueNoise = new BlueNoise();
-        _greenNoise = new GreenNoise();
-        _blueNoiseWeight = blueNoiseWeight;
-        _greenNoiseWeight = greenNoiseWeight;
+        var blueArgs = new BlueNoiseAlgorithmArgs()
+        {
+            Width = Args.Width,
+            Height = Args.Height,
+            RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm,
+            OutputFilter = null,
+            Scale = 1,
+            QuantizeLevels = 0,
+            MaxAttempts = 35,
+            Radius = 0.5
+        };
+        _blueNoise = new BlueNoise(blueArgs);
+
+        var greenArgs = new NoiseAlgorithmArgs()
+        {
+            Width = Args.Width,
+            Height = Args.Height,
+            RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm,
+            OutputFilter = null,
+            Scale = 1,
+            QuantizeLevels = 0,
+        };
+        _greenNoise = new GreenNoise(greenArgs);
+        _blueNoiseWeight = ((ICyanNoiseAlgorithmArgs)Args).BlueNoiseWeight;
+        _greenNoiseWeight = ((ICyanNoiseAlgorithmArgs)Args).GreenNoiseWeight;
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int args.Width = args.Width;
-        int args.Height = args.Height;
+        var result = new double[Args.Height, Args.Width];
+        var blueNoiseData = _blueNoise.Generate();
+        var greenNoiseData = _greenNoise.Generate();
 
-        double[,] result = new double[args.Height, args.Width];
-
-        double[,] blueNoiseData = _blueNoise.Generate(args);
-        double[,] greenNoiseData = _greenNoise.Generate(args);
-
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                double blueNoiseValue = blueNoiseData[i, j];
-                double greenNoiseValue = greenNoiseData[i, j];
-                result[i, j] = (_blueNoiseWeight * blueNoiseValue + _greenNoiseWeight * greenNoiseValue) * args.Scale;
+                var blueNoiseValue = blueNoiseData[i, j];
+                var greenNoiseValue = greenNoiseData[i, j];
+                result[i, j] = _blueNoiseWeight * blueNoiseValue + _greenNoiseWeight * greenNoiseValue;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Cyan noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Cyan noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

@@ -1,49 +1,49 @@
 ﻿// ReSharper disable UnusedMember.Global
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
+
 // Lavender noise is a term used to describe noise with a power spectral density that increases at a rate of 3 dB per octave. It lies between
 // pink noise and white noise in terms of its frequency distribution.
 public class LavenderNoise : NoiseBase
 {
-    private INoiseAlgorithm _whiteNoise;
-    private INoiseAlgorithm _pinkNoise;
-    private double _whiteNoiseWeight;
-    private double _pinkNoiseWeight;
+    private readonly INoiseAlgorithm _whiteNoise;
+    private readonly INoiseAlgorithm _pinkNoise;
 
-    public LavenderNoise(double whiteNoiseWeight = 0.5, double pinkNoiseWeight = 0.5)
+    public LavenderNoise(ILavenderNoiseAlgorithmArgs args) : base(args)
     {
-        _whiteNoise = new WhiteNoise();
-        _pinkNoise = new PinkNoise();
-        _whiteNoiseWeight = whiteNoiseWeight;
-        _pinkNoiseWeight = pinkNoiseWeight;
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
+
+        var pinkArgs = Args.Clone();
+        pinkArgs.OutputFilter = null;
+        pinkArgs.Scale = 1;
+        pinkArgs.QuantizeLevels = 0;
+        _pinkNoise = new PinkNoise(pinkArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int args.Width = args.Width;
-        int args.Height = args.Height;
+        var result = new double[Args.Height, Args.Width];
 
-        double[,] result = new double[args.Height, args.Width];
+        var whiteNoiseData = _whiteNoise.Generate();
+        var pinkNoiseData = _pinkNoise.Generate();
 
-        double[,] whiteNoiseData = _whiteNoise.Generate(args);
-        double[,] pinkNoiseData = _pinkNoise.Generate(args);
-
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                double whiteNoiseValue = whiteNoiseData[i, j];
-                double pinkNoiseValue = pinkNoiseData[i, j];
-                result[i, j] = (_whiteNoiseWeight * whiteNoiseValue + _pinkNoiseWeight * pinkNoiseValue) * args.Scale;
+                var whiteNoiseValue = whiteNoiseData[i, j];
+                var pinkNoiseValue = pinkNoiseData[i, j];
+                result[i, j] = ((ILavenderNoiseAlgorithmArgs)Args).WhiteNoiseWeight * whiteNoiseValue + ((ILavenderNoiseAlgorithmArgs)Args).PinkNoiseWeight * pinkNoiseValue;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Lavender noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Lavender noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

@@ -1,47 +1,43 @@
 ﻿// ReSharper disable UnusedMember.Global
-
 namespace VNet.Mathematics.Randomization.Noise.Color;
+
 // Teal noise is a term used to describe noise with a power spectral density that increases at a rate higher than blue noise.
 // It emphasizes higher frequencies more than blue noise.
 public class TealNoise : NoiseBase
 {
-    private INoiseAlgorithm _baseNoise;
-    private double _scale;
+    private readonly INoiseAlgorithm _whiteNoise;
 
-    public TealNoise()
+    public TealNoise(INoiseAlgorithmArgs args) : base(args)
     {
-        _baseNoise = new WhiteNoise();
-        _scale = 1.0;
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int args.Width = args.Width;
-        int args.Height = args.Height;
+        var result = new double[Args.Height, Args.Width];
 
-        double[,] result = new double[args.Height, args.Width];
+        var baseNoiseData = _whiteNoise.GenerateRaw();
 
-        double[,] baseNoiseData = _baseNoise.Generate(args);
-
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                double baseNoiseValue = baseNoiseData[i, j];
+                var baseNoiseValue = baseNoiseData[i, j];
 
                 // Apply custom transformation to achieve teal-like characteristics
-                double tealNoiseValue = Math.Sin(2.0 * Math.PI * baseNoiseValue);
+                var tealNoiseValue = Math.Sin(2.0 * Math.PI * baseNoiseValue);
 
-                result[i, j] = tealNoiseValue * _scale;
+                result[i, j] = tealNoiseValue;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Teal noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Teal noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

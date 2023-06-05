@@ -11,5 +11,8 @@ namespace VNet.Mathematics.Randomization.Noise
         public double Scale { get; set; }
         public IRandomDistributionAlgorithm RandomDistributionAlgorithm { get; set; }
         public IFilter? OutputFilter { get; set; }
+        
+        
+        public INoiseAlgorithmArgs Clone();
     }
 }

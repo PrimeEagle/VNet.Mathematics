@@ -10,37 +10,37 @@ public class ValueNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        _grid = new double[args.Height, args.Width];
+        _grid = new double[Args.Height, Args.Width];
         var random = new Random();
 
         // Fill the grid with random values.
-        for (var i = 0; i < args.Height; i++)
+        for (var i = 0; i < Args.Height; i++)
         {
-            for (var j = 0; j < args.Width; j++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                _grid[i, j] = args.RandomDistributionAlgorithm.NextDouble();
+                _grid[i, j] = Args.RandomDistributionAlgorithm.NextDouble();
             }
         }
 
-        var result = new double[args.Height, args.Width];
+        var result = new double[Args.Height, Args.Width];
 
         // Interpolate between the grid values.
-        for (var i = 0; i < args.Height; i++)
+        for (var i = 0; i < Args.Height; i++)
         {
-            for (var j = 0; j < args.Width; j++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                var yFraction = i / (double)args.Height;
-                var xFraction = j / (double)args.Width;
+                var yFraction = i / (double)Args.Height;
+                var xFraction = j / (double)Args.Width;
 
-                var top = Interpolate(_grid[(int)(yFraction * (args.Height - 1)), (int)(xFraction * (args.Width - 1))],
-                    _grid[(int)(yFraction * (args.Height - 1)), (int)Math.Min(xFraction * args.Width, args.Width - 1)],
-                    xFraction * args.Width % 1);
+                var top = Interpolate(_grid[(int)(yFraction * (Args.Height - 1)), (int)(xFraction * (Args.Width - 1))],
+                    _grid[(int)(yFraction * (Args.Height - 1)), (int)Math.Min(xFraction * Args.Width, Args.Width - 1)],
+                    xFraction * Args.Width % 1);
 
-                var bottom = Interpolate(_grid[(int)Math.Min(yFraction * args.Height, args.Height - 1), (int)(xFraction * (args.Width - 1))],
-                    _grid[(int)Math.Min(yFraction * args.Height, args.Height - 1), (int)Math.Min(xFraction * args.Width, args.Width - 1)],
-                    xFraction * args.Width % 1);
+                var bottom = Interpolate(_grid[(int)Math.Min(yFraction * Args.Height, Args.Height - 1), (int)(xFraction * (Args.Width - 1))],
+                    _grid[(int)Math.Min(yFraction * Args.Height, Args.Height - 1), (int)Math.Min(xFraction * Args.Width, Args.Width - 1)],
+                    xFraction * Args.Width % 1);
 
-                result[i, j] = Interpolate(top, bottom, yFraction * args.Height % 1);
+                result[i, j] = Interpolate(top, bottom, yFraction * Args.Height % 1);
             }
         }
 

@@ -6,8 +6,8 @@ public class Combination<T> : ICombinatronicAlgorithm<T>
     public IEnumerable<IEnumerable<T>> Find(ICombinatronicAlgorithmArgs<T> args)
     {
         var result = new List<List<T>>();
-        if (args.NumberPerCombination == 0) args.NumberPerCombination = args.List.Count;
-        Recurse<T>(args.List, args.NumberPerCombination, args.WithRepetition, 0, new List<T>(), new HashSet<int>(), result);
+        if (Args.NumberPerCombination == 0) Args.NumberPerCombination = Args.List.Count;
+        Recurse<T>(Args.List, Args.NumberPerCombination, Args.WithRepetition, 0, new List<T>(), new HashSet<int>(), result);
 
         return result;
     }

@@ -2,35 +2,30 @@
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
+// Green noise, also known as mid-frequency noise, is a specific type of noise used in halftone dithering for image processing.
+// It refers to a noise signal that emphasizes the mid-frequency range while reducing the low and high frequencies. This type of noise
+// helps create smooth transitions and gradients in images.
 public class GreenNoise : NoiseBase
 {
-    private INoiseAlgorithm _blueNoise;
+    private readonly WhiteNoise _whiteNoise;
 
-    public GreenNoise()
+
+
+    public GreenNoise(INoiseAlgorithmArgs args):base(args)
     {
-        _blueNoise = new BlueNoise();
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        var blueNoiseData = _blueNoise.Generate(args);
+        var whiteNoise = _whiteNoise.GenerateSingleSampleRaw();
+        var greenNoise = whiteNoise * (1 - Math.Abs(Math.Sin(Args.Width * 2 * Math.PI)));
 
-        var result = new double[args.Height, args.Width];
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
-            {
-                var blueNoiseValue = blueNoiseData[i, j];
-                result[i, j] = blueNoiseValue * args.Scale;
-            }
-        }
-
-        return result;
-    }
-
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
-    {
-        // Green noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        return greenNoise;
     }
 }

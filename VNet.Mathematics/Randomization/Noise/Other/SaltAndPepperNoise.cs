@@ -19,8 +19,8 @@ public class SaltAndPepperNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -28,15 +28,15 @@ public class SaltAndPepperNoise : INoiseAlgorithm
         {
             for (int j = 0; j < width; j++)
             {
-                double randomValue = args.RandomDistributionAlgorithm.NextDouble();
+                double randomValue = Args.RandomDistributionAlgorithm.NextDouble();
                 if (randomValue < _density)
                 {
-                    double saltOrPepper = args.RandomDistributionAlgorithm.NextDouble();
-                    result[i, j] = saltOrPepper < 0.5 ? _saltValue * args.Scale : _pepperValue * args.Scale;
+                    double saltOrPepper = Args.RandomDistributionAlgorithm.NextDouble();
+                    result[i, j] = saltOrPepper < 0.5 ? _saltValue * Args.Scale : _pepperValue * Args.Scale;
                 }
                 else
                 {
-                    result[i, j] = args.Scale * args.RandomDistributionAlgorithm.NextDouble();
+                    result[i, j] = Args.Scale * Args.RandomDistributionAlgorithm.NextDouble();
                 }
             }
         }

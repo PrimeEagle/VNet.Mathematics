@@ -31,15 +31,15 @@ public class ImprovedPerlinNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        var result = new double[args.Height, args.Width];
+        var result = new double[Args.Height, Args.Width];
 
-        for (var i = 0; i < args.Height; i++)
+        for (var i = 0; i < Args.Height; i++)
         {
-            for (var j = 0; j < args.Width; j++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                double x = j / (double)args.Width;
-                double y = i / (double)args.Height;
-                result[i, j] = ImprovedNoise(x, y, 0) * args.Scale;
+                double x = j / (double)Args.Width;
+                double y = i / (double)Args.Height;
+                result[i, j] = ImprovedNoise(x, y, 0) * Args.Scale;
             }
         }
 

@@ -1,49 +1,34 @@
 ﻿// ReSharper disable UnusedMember.Global
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
-// Gold noise, sometimes referred to as golden noise, is a term used to describe noise with a power spectral density that increases at a
-// rate higher than pink noise. It exhibits a higher emphasis on higher frequencies compared to pink noise.
+
+// Gold noise, also known as "golden noise" or "golden ratio noise," is a type of noise signal that exhibits a power spectrum with a unique
+// property related to the golden ratio.
 public class GoldNoise : NoiseBase
 {
-    private INoiseAlgorithm _orangeNoise;
-    private INoiseAlgorithm _brownNoise;
-    private double _orangeNoiseWeight;
-    private double _brownNoiseWeight;
+    private readonly double _phi = (1 + Math.Sqrt(5)) / 2; // Golden ratio
+    private readonly INoiseAlgorithm _whiteNoise;
 
-    public GoldNoise(double orangeNoiseWeight = 0.5, double brownNoiseWeight = 0.5)
+    public GoldNoise(IGoldNoiseAlgorithmArgs args):base(args)
     {
-        _orangeNoise = new OrangeNoise();
-        _brownNoise = new BrownNoise();
-        _orangeNoiseWeight = orangeNoiseWeight;
-        _brownNoiseWeight = brownNoiseWeight;
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        int args.Width = args.Width;
-        int args.Height = args.Height;
+        var goldNoise = 0.0;
 
-        double[,] result = new double[args.Height, args.Width];
-
-        double[,] orangeNoiseData = _orangeNoise.Generate(args);
-        double[,] brownNoiseData = _brownNoise.Generate(args);
-
-        for (int i = 0; i < args.Height; i++)
+        for (var octave = 1; octave <= ((IGoldNoiseAlgorithmArgs)Args).Octaves; octave++)
         {
-            for (int j = 0; j < args.Width; j++)
-            {
-                double orangeNoiseValue = orangeNoiseData[i, j];
-                double brownNoiseValue = brownNoiseData[i, j];
-                result[i, j] = (_orangeNoiseWeight * orangeNoiseValue + _brownNoiseWeight * brownNoiseValue) * args.Scale;
-            }
+            var frequency = ((IGoldNoiseAlgorithmArgs)Args).SamplingRate / Args.Width * Math.Pow(_phi, octave);
+            var amplitude = 1.0 / Math.Sqrt(frequency);
+            goldNoise += (_whiteNoise.GenerateSingleSampleRaw() * 2.0 - 1.0) * amplitude;
         }
 
-        return result;
-    }
-
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
-    {
-        // Gold noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        return goldNoise;
     }
 }

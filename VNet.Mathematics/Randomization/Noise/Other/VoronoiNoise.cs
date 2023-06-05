@@ -10,19 +10,19 @@ public class VoronoiNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        var result = new double[args.Height, args.Width];
+        var result = new double[Args.Height, Args.Width];
         var featurePoints = new List<(int X, int Y)>();
 
         for (int i = 0; i < pointCount; i++)
         {
-            var x = args.RandomDistributionAlgorithm.Next(0, args.Width);
-            var y = args.RandomDistributionAlgorithm.Next(0, args.Height);
+            var x = Args.RandomDistributionAlgorithm.Next(0, Args.Width);
+            var y = Args.RandomDistributionAlgorithm.Next(0, Args.Height);
             featurePoints.Add((X: x, Y: y));
         }
 
-        for (int i = 0; i < args.Height; i++)
+        for (int i = 0; i < Args.Height; i++)
         {
-            for (int j = 0; j < args.Width; j++)
+            for (int j = 0; j < Args.Width; j++)
             {
                 double minDistance = double.MaxValue;
                 foreach (var featurePoint in featurePoints)
@@ -33,7 +33,7 @@ public class VoronoiNoise : INoiseAlgorithm
                     minDistance = Math.Min(minDistance, distance);
                 }
 
-                result[i, j] = minDistance / Math.Sqrt(args.Width * args.Width + args.Height * args.Height) * args.Scale;
+                result[i, j] = minDistance / Math.Sqrt(Args.Width * Args.Width + Args.Height * Args.Height) * Args.Scale;
             }
         }
 

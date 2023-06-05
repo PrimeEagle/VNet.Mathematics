@@ -18,8 +18,8 @@ public class RandomWalkNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
         for (int i = 0; i < height; i++)
@@ -27,7 +27,7 @@ public class RandomWalkNoise : INoiseAlgorithm
             for (int j = 0; j < width; j++)
             {
                 double noiseValue = RandomWalk(_numSteps, _stepSize);
-                result[i, j] = noiseValue * args.Scale;
+                result[i, j] = noiseValue * Args.Scale;
             }
         }
 

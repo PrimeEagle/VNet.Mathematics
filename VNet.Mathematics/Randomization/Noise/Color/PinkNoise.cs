@@ -1,7 +1,4 @@
 ﻿// ReSharper disable UnusedMember.Global
-
-using VNet.Mathematics.Filter;
-
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
 // Pink noise, also known as 1/f noise, has equal energy in all octaves (or similar log bundles) of frequency. In terms of power at a constant
@@ -12,60 +9,28 @@ namespace VNet.Mathematics.Randomization.Noise.Color;
 public class PinkNoise : NoiseBase
 {
     private readonly WhiteNoise _whiteNoise;
-    private double[] _state;
 
     public PinkNoise(INoiseAlgorithmArgs args):base(args)
     {
-        _whiteNoise = new WhiteNoise();
-        _state = new double[1]; // Assuming that the filter will be an IIR filter of order 1.
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        var result = new double[args.Height, args.Width];
+        var pinkNoise = 0.0;
+        var frequency = ((IPinkNoiseAlgorithmArgs)Args).SamplingRate / Args.Width; // Compute frequency based on sample rate and width
 
-        for (var i = 0; i < args.Height; i++)
+        for (var octave = 1; octave <= ((IPinkNoiseAlgorithmArgs)Args).Octaves; octave++)
         {
-            for (var j = 0; j < args.Width; j++)
-            {
-                var sample = GenerateSingleSample(args);
-                result[i, j] = sample;
-            }
+            var amplitude = 1.0 / Math.Sqrt(frequency);
+            pinkNoise += _whiteNoise.GenerateSingleSampleRaw() * 2.0 - 1.0 * amplitude;
+            frequency *= 2.0; // Double the frequency for the next octave
         }
 
-        return result;
-    }
-
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
-    {
-        var sample = _whiteNoise.GenerateSingleSample(args);
-
-        args.FilterArgs = new FilterParameters()
-        {
-            SamplingRate = 44100, // Assuming the sample rate is 44100 samples per second
-            CutoffFrequency = 5000, // A cutoff frequency of 5000 Hz is a common choice for pink noise
-            Order = 1, // A first order filter for simplicity
-            FilterType = FilterType.IIR,
-            BandType = BandType.LowPass, // Pink noise is low-pass in nature
-            WindowFunction = WindowFunction.None // Window function is typically not used with IIR filters
-        };
-
-        args.OutputFilter = new LowPassFilter(new IirFilterAlgorithm());
-
-        if (args.OutputFilter is not null && args.FilterArgs is not null && args.OutputFilter.IsValid(args.FilterArgs))
-        {
-            _state[0] = sample; // The new white noise sample is added to the state.
-            var filteredSamples = args.OutputFilter.Filter(_state, args.FilterArgs);
-            if (filteredSamples.Length > 0)
-            {
-                sample = filteredSamples[0];
-            }
-        }
-
-        var quantizationLevel = (int)(sample * args.QuantizeLevels);
-        sample = (double)quantizationLevel / args.QuantizeLevels;
-        sample *= args.Scale;
-
-        return sample;
+        return pinkNoise;
     }
 }

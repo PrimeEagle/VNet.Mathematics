@@ -1,132 +1,113 @@
 ﻿// ReSharper disable UnusedMember.Global
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 using System.Numerics;
-using VNet.Mathematics.Filter;
+using System.Linq;
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
+// Blue noise, also known as azure noise, has a power spectral density that increases by 6 dB per octave as the frequency increases. It is often
+// used in audio applications, such as dithering or noise shaping in digital audio, as it emphasizes high frequencies while minimizing
+// low-frequency components.
 public class BlueNoise : NoiseBase
 {
-    private double _radius;
-    private int _maxAttempts;
-
-    public BlueNoise(double radius = 0.1, int maxAttempts = 30)
+    public BlueNoise(IBlueNoiseAlgorithmArgs args) : base(args)
     {
-        _radius = radius;
-        _maxAttempts = maxAttempts;
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int args.Width = args.Width;
-        int args.Height = args.Height;
+        var samples = GenerateBlueNoiseSamples();
 
-        List<Vector2> samples = GenerateBlueNoiseSamples(args.Width, args.Height);
-
-        double[,] result = new double[args.Height, args.Width];
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        var result = new double[Args.Height, Args.Width];
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                Vector2 samplePoint = new Vector2((float)j / args.Width, (float)i / args.Height);
-                double minDistance = double.MaxValue;
+                var samplePoint = new Vector2((float)j / Args.Width, (float)i / Args.Height);
+                var minDistance = double.MaxValue;
 
-                foreach (Vector2 sample in samples)
+                foreach (var sample in samples)
                 {
                     double distance = Vector2.Distance(samplePoint, sample);
                     minDistance = Math.Min(minDistance, distance);
                 }
 
-                result[i, j] = minDistance * args.Scale;
+                result[i, j] = minDistance * Args.Scale;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Blue noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Blue noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 
-    private List<Vector2> GenerateBlueNoiseSamples(int args.Width, int args.Height)
+    private List<Vector2> GenerateBlueNoiseSamples()
     {
-        double cellSize = _radius / Math.Sqrt(2);
-        int gridWidth = (int)Math.Ceiling(args.Width / cellSize);
-        int gridHeight = (int)Math.Ceiling(args.Height / cellSize);
+        var cellSize = ((IBlueNoiseAlgorithmArgs)Args).Radius / Math.Sqrt(2);
+        var gridWidth = (int)Math.Ceiling(Args.Width / cellSize);
+        var gridHeight = (int)Math.Ceiling(Args.Height / cellSize);
 
-        int[,] grid = new int[gridHeight, gridWidth];
-        List<Vector2> samples = new List<Vector2>();
-        List<Vector2> activeSamples = new List<Vector2>();
+        var grid = new int[gridHeight, gridWidth];
+        var samples = new List<Vector2>();
+        var activeSamples = new List<Vector2>();
 
-        Random random = new Random();
-        Vector2 firstSample = new Vector2((float)random.NextDouble(), (float)random.NextDouble());
+        var random = new Random();
+        var firstSample = new Vector2((float)random.NextDouble(), (float)random.NextDouble());
         activeSamples.Add(firstSample);
         samples.Add(firstSample);
-        int gridX = (int)(firstSample.X * gridWidth);
-        int gridY = (int)(firstSample.Y * gridHeight);
+        var gridX = (int)(firstSample.X * gridWidth);
+        var gridY = (int)(firstSample.Y * gridHeight);
         grid[gridY, gridX] = 1;
 
         while (activeSamples.Count > 0)
         {
-            int index = random.Next(activeSamples.Count);
-            Vector2 sample = activeSamples[index];
-            bool foundCandidate = false;
+            var index = random.Next(activeSamples.Count);
+            var sample = activeSamples[index];
+            var foundCandidate = false;
 
-            for (int attempt = 0; attempt < _maxAttempts; attempt++)
+            for (var attempt = 0; attempt < ((IBlueNoiseAlgorithmArgs)Args).MaxAttempts; attempt++)
             {
-                double angle = 2 * Math.PI * random.NextDouble();
-                double distance = _radius * (1 + random.NextDouble());
-                Vector2 candidate = sample + new Vector2((float)(distance * Math.Cos(angle)), (float)(distance * Math.Sin(angle)));
+                var angle = 2 * Math.PI * random.NextDouble();
+                var distance = ((IBlueNoiseAlgorithmArgs)Args).Radius * (1 + random.NextDouble());
+                var candidate = sample + new Vector2((float)(distance * Math.Cos(angle)), (float)(distance * Math.Sin(angle)));
 
-                if (candidate.X >= 0 && candidate.X < 1 && candidate.Y >= 0 && candidate.Y < 1 && IsCandidateValid(candidate, samples, grid, cellSize, gridWidth, gridHeight))
-                {
-                    activeSamples.Add(candidate);
-                    samples.Add(candidate);
-                    gridX = (int)(candidate.X * gridWidth);
-                    gridY = (int)(candidate.Y * gridHeight);
-                    grid[gridY, gridX] = 1;
-                    foundCandidate = true;
-                    break;
-                }
+                if (candidate.X is < 0 or >= 1 || candidate.Y is < 0 or >= 1 || !IsCandidateValid(candidate, samples, grid, cellSize, gridWidth, gridHeight)) continue;
+
+                activeSamples.Add(candidate);
+                samples.Add(candidate);
+                gridX = (int)(candidate.X * gridWidth);
+                gridY = (int)(candidate.Y * gridHeight);
+                grid[gridY, gridX] = 1;
+                foundCandidate = true;
+                break;
             }
 
-            if (!foundCandidate)
-            {
-                activeSamples.RemoveAt(index);
-            }
+            if (!foundCandidate) activeSamples.RemoveAt(index);
         }
 
         return samples;
     }
 
-    private bool IsCandidateValid(Vector2 candidate, List<Vector2> samples, int[,] grid, double cellSize, int gridWidth, int gridHeight)
+    private static bool IsCandidateValid(Vector2 candidate, IReadOnlyList<Vector2> samples, int[,] grid, double cellSize, int gridWidth, int gridHeight)
     {
-        int cellX = (int)(candidate.X * gridWidth);
-        int cellY = (int)(candidate.Y * gridHeight);
+        var cellX = (int)(candidate.X * gridWidth);
+        var cellY = (int)(candidate.Y * gridHeight);
 
-        int startX = Math.Max(0, cellX - 2);
-        int startY = Math.Max(0, cellY - 2);
-        int endX = Math.Min(gridWidth - 1, cellX + 2);
-        int endY = Math.Min(gridHeight - 1, cellY + 2);
+        var startX = Math.Max(0, cellX - 2);
+        var startY = Math.Max(0, cellY - 2);
+        var endX = Math.Min(gridWidth - 1, cellX + 2);
+        var endY = Math.Min(gridHeight - 1, cellY + 2);
 
-        for (int y = startY; y <= endY; y++)
-        {
-            for (int x = startX; x <= endX; x++)
-            {
+        for (var y = startY; y <= endY; y++)
+            for (var x = startX; x <= endX; x++)
                 if (grid[y, x] == 1)
                 {
-                    Vector2 existingSample = samples[grid[y, x] - 1];
+                    var existingSample = samples[grid[y, x] - 1];
                     double distance = Vector2.Distance(candidate, existingSample);
 
-                    if (distance < cellSize)
-                    {
-                        return false;
-                    }
+                    if (distance < cellSize) return false;
                 }
-            }
-        }
 
         return true;
     }

@@ -18,23 +18,6 @@
             // get raw sample
             var sample = GenerateSingleSampleRaw();
 
-            // filter
-            if (Args.OutputFilter is not null && Args.OutputFilter.IsValid())
-            {
-                var filteredSamples = Args.OutputFilter.Filter(new double[] { sample });
-                if (filteredSamples.Length > 0)
-                {
-                    sample = filteredSamples[0];
-                }
-            }
-
-            // quantize
-            var quantizationLevel = (int)(sample * Args.QuantizeLevels);
-            sample = (double)quantizationLevel / Args.QuantizeLevels;
-
-            // scale
-            sample *= Args.Scale;
-
             return sample;
         }
 
@@ -56,18 +39,40 @@
 
         public virtual double[,] Generate()
         {
-            var samples = new double[Args.Height, Args.Width];
+            var samples = GenerateRaw();
+            var output = new double[Args.Height, Args.Width];
 
             for (var i = 0; i < Args.Height; i++)
             {
                 for (var j = 0; j < Args.Width; j++)
                 {
-                    var sample = GenerateSingleSample();
-                    samples[i, j] = sample;
+                    output[i, j] = PostProcess(samples[i, j]);
                 }
             }
 
-            return samples;
+            return output;
+        }
+
+        private double PostProcess(double sample)
+        {
+            // filter
+            if (Args.OutputFilter is not null && Args.OutputFilter.IsValid())
+            {
+                var filteredSamples = Args.OutputFilter.Filter(new double[] { sample });
+                if (filteredSamples.Length > 0)
+                {
+                    sample = filteredSamples[0];
+                }
+            }
+
+            // quantize
+            var quantizationLevel = (int)(sample * Args.QuantizeLevels);
+            sample = (double)quantizationLevel / Args.QuantizeLevels;
+
+            // scale
+            sample *= Args.Scale;
+
+            return sample;
         }
     }
 }

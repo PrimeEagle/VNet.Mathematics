@@ -16,8 +16,8 @@ public class DeltaNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -25,7 +25,7 @@ public class DeltaNoise : INoiseAlgorithm
         {
             for (int j = 0; j < width; j++)
             {
-                result[i, j] = i == _deltaIndex && j == _deltaIndex ? _deltaValue * args.Scale : 0.0;
+                result[i, j] = i == _deltaIndex && j == _deltaIndex ? _deltaValue * Args.Scale : 0.0;
             }
         }
 

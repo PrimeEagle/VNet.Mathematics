@@ -16,14 +16,14 @@ public class CubicNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        var result = new double[args.Height, args.Width];
+        var result = new double[Args.Height, Args.Width];
 
-        for (int i = 0; i < args.Height; i++)
+        for (int i = 0; i < Args.Height; i++)
         {
-            for (int j = 0; j < args.Width; j++)
+            for (int j = 0; j < Args.Width; j++)
             {
-                double x = j / (double)args.Width;
-                double y = i / (double)args.Height;
+                double x = j / (double)Args.Width;
+                double y = i / (double)Args.Height;
                 result[i, j] = Noise(x, y) * _scale;
             }
         }

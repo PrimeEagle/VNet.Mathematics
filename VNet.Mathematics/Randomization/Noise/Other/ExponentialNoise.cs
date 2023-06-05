@@ -16,8 +16,8 @@ public class ExponentialNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -25,8 +25,8 @@ public class ExponentialNoise : INoiseAlgorithm
         {
             for (int j = 0; j < width; j++)
             {
-                double randomValue = GenerateExponentialRandomValue(_lambda, args.RandomDistributionAlgorithm);
-                result[i, j] = randomValue * args.Scale;
+                double randomValue = GenerateExponentialRandomValue(_lambda, Args.RandomDistributionAlgorithm);
+                result[i, j] = randomValue * Args.Scale;
             }
         }
 

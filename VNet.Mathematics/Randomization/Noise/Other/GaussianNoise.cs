@@ -17,8 +17,8 @@ public class GaussianNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -26,8 +26,8 @@ public class GaussianNoise : INoiseAlgorithm
         {
             for (int j = 0; j < width; j++)
             {
-                double randomValue = args.RandomDistributionAlgorithm.NextGaussian(_mean, _stdDev);
-                result[i, j] = randomValue * args.Scale;
+                double randomValue = Args.RandomDistributionAlgorithm.NextGaussian(_mean, _stdDev);
+                result[i, j] = randomValue * Args.Scale;
             }
         }
 

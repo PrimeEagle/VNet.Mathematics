@@ -21,8 +21,8 @@ public class TurbulenceNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
         double amplitude = 1.0;
@@ -36,7 +36,7 @@ public class TurbulenceNoise : INoiseAlgorithm
                 Height = height,
                 QuantizeLevels = 1,
                 Scale = 1.0,
-                RandomDistributionAlgorithm = args.RandomDistributionAlgorithm
+                RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm
             });
 
             for (int i = 0; i < height; i++)
@@ -51,7 +51,7 @@ public class TurbulenceNoise : INoiseAlgorithm
             frequency *= _lacunarity;
         }
 
-        Normalize(result, args.QuantizeLevels, args.Scale);
+        Normalize(result, Args.QuantizeLevels, Args.Scale);
         return result;
     }
 

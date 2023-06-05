@@ -7,7 +7,7 @@ public class Subset<T> : ICombinatronicAlgorithm<T>
     {
         var result = new List<List<T>>();
 
-        Recurse<T>(args.List, 0, new List<T>(), new HashSet<int>(), result);
+        Recurse<T>(Args.List, 0, new List<T>(), new HashSet<int>(), result);
 
         return result;
     }

@@ -24,8 +24,8 @@ public class WaveletNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
         double frequency = _frequency;
@@ -46,7 +46,7 @@ public class WaveletNoise : INoiseAlgorithm
             amplitude *= _gain;
         }
 
-        Normalize(result, args.QuantizeLevels, args.Scale);
+        Normalize(result, Args.QuantizeLevels, Args.Scale);
         return result;
     }
 

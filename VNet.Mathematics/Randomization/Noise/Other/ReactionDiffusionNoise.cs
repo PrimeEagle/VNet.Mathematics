@@ -28,13 +28,13 @@ public class ReactionDiffusionNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         _grid = new double[height, width];
 
         // Initialize the grid with random values
-        InitializeGrid(args.RandomDistributionAlgorithm);
+        InitializeGrid(Args.RandomDistributionAlgorithm);
 
         // Perform the reaction-diffusion simulation
         for (int i = 0; i < _iterations; i++)
@@ -42,7 +42,7 @@ public class ReactionDiffusionNoise : INoiseAlgorithm
             SimulateReactionDiffusion();
         }
 
-        Normalize(_grid, args.QuantizeLevels, args.Scale);
+        Normalize(_grid, Args.QuantizeLevels, Args.Scale);
         return _grid;
     }
 

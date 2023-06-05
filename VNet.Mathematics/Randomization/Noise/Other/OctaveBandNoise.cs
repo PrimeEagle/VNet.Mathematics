@@ -23,8 +23,8 @@ public class OctaveBandNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -33,7 +33,7 @@ public class OctaveBandNoise : INoiseAlgorithm
 
         IFilterArgs filterArgs = new BandPassFilterArgs
         {
-            SampleRate = args.SampleRate,
+            SampleRate = Args.SampleRate,
             LowCutoffFrequency = lowerFrequency,
             HighCutoffFrequency = upperFrequency
         };
@@ -45,7 +45,7 @@ public class OctaveBandNoise : INoiseAlgorithm
         else
         {
             double[,] baseNoiseData = _baseNoise.Generate(args);
-            result = FilterNoise(baseNoiseData, args.SampleRate, filterArgs);
+            result = FilterNoise(baseNoiseData, Args.SampleRate, filterArgs);
         }
 
         return result;

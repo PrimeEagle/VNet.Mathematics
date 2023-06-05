@@ -1,50 +1,33 @@
 ﻿// ReSharper disable UnusedMember.Global
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
+// Yellow noise, also known as "1/f^3 noise" or "squared noise," is a type of noise signal that exhibits a power spectrum that decreases by
+// 6 dB per octave. It is characterized by a steeper roll-off compared to pink noise or orange noise.
 public class YellowNoise : NoiseBase
 {
-    private readonly INoiseAlgorithm _blueNoise;
     private readonly INoiseAlgorithm _whiteNoise;
-    private readonly INoiseAlgorithm _grayNoise;
-    private readonly double _blueNoiseWeight;
-    private readonly double _whiteNoiseWeight;
-    private readonly double _grayNoiseWeight;
 
-    public YellowNoise(double blueNoiseWeight = 0.7, double whiteNoiseWeight = 0.3, double grayNoiseWeight = 0.0)
+    public YellowNoise(IYellowNoiseAlgorithmArgs args) : base(args)
     {
-        _blueNoise = new BlueNoise();
-        _whiteNoise = new WhiteNoise();
-        _grayNoise = new GrayNoise();
-        _blueNoiseWeight = blueNoiseWeight;
-        _whiteNoiseWeight = whiteNoiseWeight;
-        _grayNoiseWeight = grayNoiseWeight;
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        var blueNoiseData = _blueNoise.Generate(args);
-        var whiteNoiseData = _whiteNoise.Generate(args);
-        var grayNoiseData = _grayNoise.Generate(args);
+        var yellowNoise = 0.0;
+        var frequency = ((IYellowNoiseAlgorithmArgs)Args).SamplingRate / Args.Width;
 
-        var result = new double[args.Height, args.Width];
-        for (var i = 0; i < args.Height; i++)
-            for (var j = 0; j < args.Width; j++)
-            {
-                var blueNoiseValue = blueNoiseData[i, j];
-                var whiteNoiseValue = whiteNoiseData[i, j];
-                var grayNoiseValue = grayNoiseData[i, j];
+        for (var octave = 1; octave <= ((IYellowNoiseAlgorithmArgs)Args).Octaves; octave++)
+        {
+            var amplitude = 1.0 / Math.Pow(frequency, octave * 2);
+            yellowNoise += (_whiteNoise.GenerateSingleSampleRaw() * 2.0 - 1.0) * amplitude;
+        }
 
-                var yellowNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue + _grayNoiseWeight * grayNoiseValue;
-                result[i, j] = yellowNoiseValue * args.Scale;
-            }
-
-        return result;
-    }
-
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
-    {
-        // Yellow noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        return yellowNoise;
     }
 }

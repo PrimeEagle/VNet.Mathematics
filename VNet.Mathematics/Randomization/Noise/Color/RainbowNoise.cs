@@ -1,52 +1,34 @@
 ﻿// ReSharper disable UnusedMember.Global
 
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
+// Rainbow noise is a term that has been used to describe noise signals that contain a wide range of frequencies and power distributions,
+// similar to the colors of a rainbow. It implies a complex and diverse spectrum rather than adhering to a specific power-law distribution.
 public class RainbowNoise : NoiseBase
 {
-    private INoiseAlgorithm _blueNoise;
-    private INoiseAlgorithm _whiteNoise;
-    private INoiseAlgorithm _grayNoise;
-    private double _blueNoiseWeight;
-    private double _whiteNoiseWeight;
-    private double _grayNoiseWeight;
+    private readonly WhiteNoise _whiteNoise;
 
-    public RainbowNoise(double blueNoiseWeight = 0.25, double whiteNoiseWeight = 0.25, double grayNoiseWeight = 0.5)
+    public RainbowNoise(IRainbowNoiseAlgorithmArgs args) : base(args)
     {
-        _blueNoise = new BlueNoise();
-        _whiteNoise = new WhiteNoise();
-        _grayNoise = new GrayNoise();
-        _blueNoiseWeight = blueNoiseWeight;
-        _whiteNoiseWeight = whiteNoiseWeight;
-        _grayNoiseWeight = grayNoiseWeight;
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        var blueNoiseData = _blueNoise.Generate(args);
-        var whiteNoiseData = _whiteNoise.Generate(args);
-        var grayNoiseData = _grayNoise.Generate(args);
+        var rainbowNoise = 0.0;
 
-        var result = new double[args.Height, args.Width];
-        for (int i = 0; i < args.Height; i++)
+        for (var octave = 1; octave <= ((IRainbowNoiseAlgorithmArgs)Args).Octaves; octave++)
         {
-            for (int j = 0; j < args.Width; j++)
-            {
-                var blueNoiseValue = blueNoiseData[i, j];
-                var whiteNoiseValue = whiteNoiseData[i, j];
-                var grayNoiseValue = grayNoiseData[i, j];
-
-                var rainbowNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue + _grayNoiseWeight * grayNoiseValue;
-                result[i, j] = rainbowNoiseValue * args.Scale;
-            }
+            var frequency = ((IRainbowNoiseAlgorithmArgs)Args).SamplingRate / ((IRainbowNoiseAlgorithmArgs)Args).Width * octave;
+            var amplitude = 1.0 / Math.Sqrt(frequency);
+            rainbowNoise += (_whiteNoise.GenerateSingleSampleRaw() * 2.0 - 1.0) * amplitude;
         }
 
-        return result;
-    }
-
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
-    {
-        // Rainbow noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        return rainbowNoise;
     }
 }

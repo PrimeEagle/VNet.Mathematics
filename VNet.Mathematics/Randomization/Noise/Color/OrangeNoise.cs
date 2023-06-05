@@ -1,52 +1,27 @@
 ﻿// ReSharper disable UnusedMember.Global
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
-
+// Orange noise is sometimes used to describe noise with a power spectral density that decreases at a rate of 3 dB per octave. It lies between
+// red (brown) noise and yellow (pink) noise in terms of its spectral characteristics.
 public class OrangeNoise : NoiseBase
 {
-    private INoiseAlgorithm _blueNoise;
-    private INoiseAlgorithm _whiteNoise;
-    private INoiseAlgorithm _grayNoise;
-    private double _blueNoiseWeight;
-    private double _whiteNoiseWeight;
-    private double _grayNoiseWeight;
-
-    public OrangeNoise(double blueNoiseWeight = 0.5, double whiteNoiseWeight = 0.3, double grayNoiseWeight = 0.2)
+    public OrangeNoise(IOrangeNoiseAlgorithmArgs args) : base(args)
     {
-        _blueNoise = new BlueNoise();
-        _whiteNoise = new WhiteNoise();
-        _grayNoise = new GrayNoise();
-        _blueNoiseWeight = blueNoiseWeight;
-        _whiteNoiseWeight = whiteNoiseWeight;
-        _grayNoiseWeight = grayNoiseWeight;
+
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        var blueNoiseData = _blueNoise.Generate(args);
-        var whiteNoiseData = _whiteNoise.Generate(args);
-        var grayNoiseData = _grayNoise.Generate(args);
+        var orangeNoise = 0.0;
+        var frequency = ((IOrangeNoiseAlgorithmArgs)Args).SamplingRate / Args.Width;
 
-        var result = new double[args.Height, args.Width];
-        for (int i = 0; i < args.Height; i++)
+        for (var octave = 1; octave <= ((IOrangeNoiseAlgorithmArgs)Args).Octaves; octave++)
         {
-            for (int j = 0; j < args.Width; j++)
-            {
-                var blueNoiseValue = blueNoiseData[i, j];
-                var whiteNoiseValue = whiteNoiseData[i, j];
-                var grayNoiseValue = grayNoiseData[i, j];
-
-                var orangeNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue + _grayNoiseWeight * grayNoiseValue;
-                result[i, j] = orangeNoiseValue * args.Scale;
-            }
+            var amplitude = 1.0 / Math.Pow(frequency, octave * ((IOrangeNoiseAlgorithmArgs)Args).Exponent);
+            orangeNoise += (Args.RandomDistributionAlgorithm.NextDouble() * 2.0 - 1.0) * amplitude;
         }
 
-        return result;
-    }
-
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
-    {
-        // Orange noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        return orangeNoise;
     }
 }

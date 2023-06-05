@@ -14,8 +14,8 @@ public class DigitalNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -23,10 +23,10 @@ public class DigitalNoise : INoiseAlgorithm
         {
             for (int j = 0; j < width; j++)
             {
-                double randomValue = args.RandomDistributionAlgorithm.NextDouble();
+                double randomValue = Args.RandomDistributionAlgorithm.NextDouble();
                 int quantizedValue = (int)(randomValue * _quantizeLevels);
                 double scaledValue = quantizedValue / (double)(_quantizeLevels - 1);
-                result[i, j] = scaledValue * args.Scale;
+                result[i, j] = scaledValue * Args.Scale;
             }
         }
 

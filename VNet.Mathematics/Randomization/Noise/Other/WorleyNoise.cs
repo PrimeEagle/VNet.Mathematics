@@ -15,8 +15,8 @@ public class WorleyNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        int width = args.Width;
-        int height = args.Height;
+        int width = Args.Width;
+        int height = Args.Height;
 
         double[,] result = new double[height, width];
 
@@ -28,8 +28,8 @@ public class WorleyNoise : INoiseAlgorithm
 
                 for (int k = 0; k < _numPoints; k++)
                 {
-                    double x = args.RandomDistributionAlgorithm.NextDouble();
-                    double y = args.RandomDistributionAlgorithm.NextDouble();
+                    double x = Args.RandomDistributionAlgorithm.NextDouble();
+                    double y = Args.RandomDistributionAlgorithm.NextDouble();
                     double distance = Math.Sqrt(Math.Pow(x - i, 2) + Math.Pow(y - j, 2));
 
                     if (distance < minDistance)
@@ -38,7 +38,7 @@ public class WorleyNoise : INoiseAlgorithm
                     }
                 }
 
-                result[i, j] = minDistance * args.Scale;
+                result[i, j] = minDistance * Args.Scale;
             }
         }
 

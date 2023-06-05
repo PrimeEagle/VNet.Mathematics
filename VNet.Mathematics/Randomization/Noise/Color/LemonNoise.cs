@@ -1,47 +1,41 @@
 ﻿// ReSharper disable UnusedMember.Global
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
-//  Lemon noise is a term used to describe noise with a power spectral density that increases at a rate higher than white noise.
+
+// Lemon noise is a term used to describe noise with a power spectral density that increases at a rate higher than white noise.
 // It emphasizes higher frequencies more than white noise.
 public class LemonNoise : NoiseBase
 {
-    private INoiseAlgorithm _baseNoise;
-    private double _scale;
+    private readonly INoiseAlgorithm _whiteNoise;
 
-    public LemonNoise()
+    public LemonNoise(INoiseAlgorithmArgs args) : base(args)
     {
-        _baseNoise = new WhiteNoise();
-        _scale = 1.0;
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int args.Width = args.Width;
-        int args.Height = args.Height;
+        var result = new double[Args.Height, Args.Width];
+        var whiteNoiseData = _whiteNoise.Generate();
 
-        double[,] result = new double[args.Height, args.Width];
-
-        double[,] baseNoiseData = _baseNoise.Generate(args);
-
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                double baseNoiseValue = baseNoiseData[i, j];
+                var baseNoiseValue = whiteNoiseData[i, j];
+                var lemonNoiseValue = Math.Abs(baseNoiseValue) < 0.5 ? baseNoiseValue * 2.0 : 1.0 - (baseNoiseValue - 0.5) * 2.0;
 
-                // Apply custom transformation to achieve lemon-like characteristics
-                double lemonNoiseValue = Math.Abs(baseNoiseValue) < 0.5 ? baseNoiseValue * 2.0 : 1.0 - (baseNoiseValue - 0.5) * 2.0;
-
-                result[i, j] = lemonNoiseValue * _scale;
+                result[i, j] = lemonNoiseValue;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Lemon noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Lemon noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

@@ -1,51 +1,73 @@
 ﻿// ReSharper disable UnusedMember.Global
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
+
+// Indigo noise is a less common term, but it has been used to describe noise with a power spectral density that increases more steeply
+// than blue noise as the frequency increases. It emphasizes higher frequencies to a greater extent than blue noise.
 public class IndigoNoise : NoiseBase
 {
-    private INoiseAlgorithm _blueNoise;
-    private INoiseAlgorithm _whiteNoise;
-    private INoiseAlgorithm _grayNoise;
-    private double _blueNoiseWeight;
-    private double _whiteNoiseWeight;
-    private double _grayNoiseWeight;
+    private readonly INoiseAlgorithm _blueNoise;
+    private readonly INoiseAlgorithm _whiteNoise;
+    private readonly INoiseAlgorithm _grayNoise;
 
-    public IndigoNoise(double blueNoiseWeight = 0.2, double whiteNoiseWeight = 0.4, double grayNoiseWeight = 0.4)
+    public IndigoNoise(IIndigoNoiseAlgorithmArgs args) : base(args)
     {
-        _blueNoise = new BlueNoise();
-        _whiteNoise = new WhiteNoise();
-        _grayNoise = new GrayNoise();
-        _blueNoiseWeight = blueNoiseWeight;
-        _whiteNoiseWeight = whiteNoiseWeight;
-        _grayNoiseWeight = grayNoiseWeight;
+        var blueArgs = new BlueNoiseAlgorithmArgs()
+        {
+            OutputFilter = null,
+            Scale = 1,
+            Width = Args.Width,
+            Height = Args.Height,
+            RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm,
+            QuantizeLevels = 0,
+            MaxAttempts = 35,
+            Radius = 0.5
+        };
+        _blueNoise = new BlueNoise(blueArgs);
+
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
+
+        var grayArgs = new GrayNoiseAlgorithmArgs()
+        {
+            OutputFilter = null,
+            Scale = 1,
+            Width = Args.Width,
+            Height = Args.Height,
+            RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm,
+            QuantizeLevels = 0,
+            BlueNoiseWeight = 0.5,
+            WhiteNoiseWeight = 0.5
+        };
+        _grayNoise = new GrayNoise(grayArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        var blueNoiseData = _blueNoise.Generate(args);
-        var whiteNoiseData = _whiteNoise.Generate(args);
-        var grayNoiseData = _grayNoise.Generate(args);
+        var blueNoiseData = _blueNoise.Generate();
+        var whiteNoiseData = _whiteNoise.Generate();
+        var grayNoiseData = _grayNoise.Generate();
 
-        var result = new double[args.Height, args.Width];
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        var result = new double[Args.Height, Args.Width];
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
                 var blueNoiseValue = blueNoiseData[i, j];
                 var whiteNoiseValue = whiteNoiseData[i, j];
                 var grayNoiseValue = grayNoiseData[i, j];
 
-                var indigoNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue + _grayNoiseWeight * grayNoiseValue;
-                result[i, j] = indigoNoiseValue * args.Scale;
+                var indigoNoiseValue = ((IIndigoNoiseAlgorithmArgs)Args).BlueNoiseWeight * blueNoiseValue + ((IIndigoNoiseAlgorithmArgs)Args).WhiteNoiseWeight * whiteNoiseValue + ((IIndigoNoiseAlgorithmArgs)Args).GrayNoiseWeight * grayNoiseValue;
+                result[i, j] = indigoNoiseValue * Args.Scale;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Indigo noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Indigo noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

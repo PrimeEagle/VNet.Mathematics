@@ -1,48 +1,57 @@
 ﻿// ReSharper disable UnusedMember.Global
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
 
 // Gray noise is a variation of pink noise with a more balanced power spectral density distribution across the frequency spectrum.It is designed to have an equal
 // amount of energy in each octave, resulting in a pleasing and natural sound.
 public class GrayNoise : NoiseBase
 {
-    private INoiseAlgorithm _blueNoise;
-    private INoiseAlgorithm _whiteNoise;
-    private double _blueNoiseWeight;
-    private double _whiteNoiseWeight;
+    private readonly INoiseAlgorithm _blueNoise;
+    private readonly INoiseAlgorithm _whiteNoise;
 
-    public GrayNoise(double blueNoiseWeight = 0.5, double whiteNoiseWeight = 0.5)
+    public GrayNoise(IGrayNoiseAlgorithmArgs args):base(args)
     {
-        _blueNoise = new BlueNoise();
-        _whiteNoise = new WhiteNoise();
-        _blueNoiseWeight = blueNoiseWeight;
-        _whiteNoiseWeight = whiteNoiseWeight;
+        var blueArgs = new BlueNoiseAlgorithmArgs()
+        {
+            OutputFilter = null,
+            Scale = 1,
+            Width = Args.Width,
+            Height = Args.Height,
+            RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm,
+            QuantizeLevels = 0,
+            MaxAttempts = 35,
+            Radius = 0.5
+        };
+        _blueNoise = new BlueNoise(blueArgs);
+
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        var blueNoiseData = _blueNoise.Generate(args);
-        var whiteNoiseData = _whiteNoise.Generate(args);
+        var blueNoiseData = _blueNoise.Generate();
+        var whiteNoiseData = _whiteNoise.Generate();
 
-        var result = new double[args.Height, args.Width];
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        var result = new double[Args.Height, Args.Width];
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
                 var blueNoiseValue = blueNoiseData[i, j];
                 var whiteNoiseValue = whiteNoiseData[i, j];
 
-                var grayNoiseValue = _blueNoiseWeight * blueNoiseValue + _whiteNoiseWeight * whiteNoiseValue;
-                result[i, j] = grayNoiseValue * args.Scale;
+                var grayNoiseValue = ((IGrayNoiseAlgorithmArgs)Args).BlueNoiseWeight * blueNoiseValue + ((IGrayNoiseAlgorithmArgs)Args).WhiteNoiseWeight * whiteNoiseValue;
+                result[i, j] = grayNoiseValue;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Gray noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Gray noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

@@ -1,67 +1,52 @@
 ﻿// ReSharper disable UnusedMember.Global
 
-using VNet.Mathematics.Randomization.Distribution;
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 
 namespace VNet.Mathematics.Randomization.Noise.Color;
+
 // Pinky noise is a variation of pink noise that exhibits a more natural, organic texture. It is generated using a combination of fractal
 // algorithms, filtering techniques, or a combination of other noise types. Pinky noise is used in audio synthesis, sound design, and
 // generating natural soundscapes.
-public class PinkyNoise : INoiseAlgorithm
+public class PinkyNoise : NoiseBase
 {
-    private int _numSteps;
-    private double _stepSize;
+    private readonly INoiseAlgorithm _whiteNoise;
 
-    public PinkyNoise(int numSteps = 1000, double stepSize = 0.1)
+    public PinkyNoise(IPinkyNoiseAlgorithmArgs args) : base(args)
     {
-        _numSteps = numSteps;
-        _stepSize = stepSize;
+        var whiteArgs = Args.Clone();
+        whiteArgs.OutputFilter = null;
+        whiteArgs.Scale = 1;
+        whiteArgs.QuantizeLevels = 0;
+        _whiteNoise = new WhiteNoise(whiteArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int width = args.Width;
-        int height = args.Height;
+        var width = Args.Width;
+        var height = Args.Height;
 
-        double[,] result = new double[height, width];
-        double[,] whiteNoise = GenerateWhiteNoise(width, height, args.RandomDistributionAlgorithm);
+        var result = new double[height, width];
+        var whiteNoise = _whiteNoise.GenerateRaw();
 
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
+        for (var i = 0; i < height; i++)
+            for (var j = 0; j < width; j++)
             {
-                double sample = whiteNoise[i, j];
+                var sample = whiteNoise[i, j];
 
-                for (int k = 1; k <= _numSteps; k++)
+                for (var k = 1; k <= ((IPinkyNoiseAlgorithmArgs)Args).NumSteps; k++)
                 {
-                    double randomStep = (2 * args.RandomDistributionAlgorithm.NextDouble() - 1) * _stepSize;
+                    var randomStep = (2 * Args.RandomDistributionAlgorithm.NextDouble() - 1) * ((IPinkyNoiseAlgorithmArgs)Args).StepSize;
                     sample += randomStep / (k * k);
                 }
 
-                result[i, j] = sample * args.Scale;
+                result[i, j] = sample * Args.Scale;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Pinky noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
-    }
-
-    private double[,] GenerateWhiteNoise(int width, int height, IRandomDistributionAlgorithm randomDistributionAlgorithm)
-    {
-        double[,] noise = new double[height, width];
-
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                noise[i, j] = randomDistributionAlgorithm.NextDouble();
-            }
-        }
-
-        return noise;
+        throw new NotImplementedException("Pinky noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

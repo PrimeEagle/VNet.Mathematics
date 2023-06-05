@@ -20,11 +20,11 @@ public class FractalNoise : INoiseAlgorithm
 
     public double[,] Generate(INoiseAlgorithmArgs args)
     {
-        var result = new double[args.Height, args.Width];
+        var result = new double[Args.Height, Args.Width];
 
-        for (int i = 0; i < args.Height; i++)
+        for (int i = 0; i < Args.Height; i++)
         {
-            for (int j = 0; j < args.Width; j++)
+            for (int j = 0; j < Args.Width; j++)
             {
                 double frequency = 1;
                 double amplitude = 1;
@@ -32,15 +32,15 @@ public class FractalNoise : INoiseAlgorithm
 
                 for (int octave = 0; octave < _octaves; octave++)
                 {
-                    double x = j * frequency / args.Width;
-                    double y = i * frequency / args.Height;
+                    double x = j * frequency / Args.Width;
+                    double y = i * frequency / Args.Height;
                     double noise = _baseNoise.GenerateSingleSample(new NoiseAlgorithmArgs
                     {
                         Width = (int)x,
                         Height = (int)y,
-                        QuantizeLevels = args.QuantizeLevels,
-                        Scale = args.Scale,
-                        RandomDistributionAlgorithm = args.RandomDistributionAlgorithm
+                        QuantizeLevels = Args.QuantizeLevels,
+                        Scale = Args.Scale,
+                        RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm
                     });
 
                     total += noise * amplitude;

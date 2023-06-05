@@ -1,49 +1,55 @@
 ﻿// ReSharper disable UnusedMember.Global
-
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 namespace VNet.Mathematics.Randomization.Noise.Color;
+
 // Crimson noise is a term occasionally used to describe noise with a power spectral density that increases at a rate higher than
 // red (brown) noise. It emphasizes higher frequencies more than red noise.
 public class CrimsonNoise : NoiseBase
 {
-    private INoiseAlgorithm _redNoise;
-    private INoiseAlgorithm _purpleNoise;
-    private double _redNoiseWeight;
-    private double _purpleNoiseWeight;
+    private readonly INoiseAlgorithm _redNoise;
+    private readonly INoiseAlgorithm _violetNoise;
 
-    public CrimsonNoise(double redNoiseWeight = 0.5, double purpleNoiseWeight = 0.5)
+    public CrimsonNoise(ICrimsonNoiseAlgorithmArgs args) : base(args)
     {
-        _redNoise = new RedNoise();
-        _purpleNoise = new PurpleNoise();
-        _redNoiseWeight = redNoiseWeight;
-        _purpleNoiseWeight = purpleNoiseWeight;
+        var redArgs = new RedNoiseAlgorithmArgs()
+        {
+            OutputFilter = null,
+            Scale = 1,
+            Width = Args.Width,
+            Height = Args.Height,
+            SamplingRate = 44100,
+            RandomDistributionAlgorithm = Args.RandomDistributionAlgorithm,
+            QuantizeLevels = 0
+        };
+        _redNoise = new RedNoise(redArgs);
+
+        var violetArgs = Args.Clone();
+        violetArgs.OutputFilter = null;
+        violetArgs.Scale = 1;
+        violetArgs.QuantizeLevels = 0;
+        _violetNoise = new VioletNoise(violetArgs);
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int args.Width = args.Width;
-        int args.Height = args.Height;
+        var result = new double[Args.Height, Args.Width];
 
-        double[,] result = new double[args.Height, args.Width];
+        var redNoiseData = _redNoise.Generate();
+        var purpleNoiseData = _violetNoise.Generate();
 
-        double[,] redNoiseData = _redNoise.Generate(args);
-        double[,] purpleNoiseData = _purpleNoise.Generate(args);
-
-        for (int i = 0; i < args.Height; i++)
-        {
-            for (int j = 0; j < args.Width; j++)
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                double redNoiseValue = redNoiseData[i, j];
-                double purpleNoiseValue = purpleNoiseData[i, j];
-                result[i, j] = (_redNoiseWeight * redNoiseValue + _purpleNoiseWeight * purpleNoiseValue) * args.Scale;
+                var redNoiseValue = redNoiseData[i, j];
+                var purpleNoiseValue = purpleNoiseData[i, j];
+                result[i, j] = ((ICrimsonNoiseAlgorithmArgs)Args).RedNoiseWeight * redNoiseValue + ((ICrimsonNoiseAlgorithmArgs)Args).VioletNoiseWeight * purpleNoiseValue;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Crimson noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Crimson noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }
