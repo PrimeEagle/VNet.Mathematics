@@ -1,66 +1,61 @@
 ﻿// ReSharper disable UnusedMember.Global
 
 namespace VNet.Mathematics.Randomization.Noise.Other;
+
 // Red noise, also known as Brown or Brownian noise, is similar to pink noise in that it also decreases in power as frequency increases.However,
 // while pink noise decreases power by 3 dB per octave, red noise decreases power by 6 dB per octave (or 20 dB per decade). This means it's essentially
 // "more pink" than pink noise. Generating red noise is typically done by integrating white noise, or in other words, each sample of red noise is
 // the sum of the current white noise sample and the previous red noise sample.
-public class CubicNoise : INoiseAlgorithm
+public class CubicNoise : NoiseBase
 {
-    private double _scale;
-
-    public CubicNoise(double scale = 1.0)
+    public CubicNoise(INoiseAlgorithmArgs args) : base(args)
     {
-        _scale = scale;
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
         var result = new double[Args.Height, Args.Width];
 
-        for (int i = 0; i < Args.Height; i++)
-        {
-            for (int j = 0; j < Args.Width; j++)
+        for (var i = 0; i < Args.Height; i++)
+            for (var j = 0; j < Args.Width; j++)
             {
-                double x = j / (double)Args.Width;
-                double y = i / (double)Args.Height;
-                result[i, j] = Noise(x, y) * _scale;
+                var x = j / (double)Args.Width;
+                var y = i / (double)Args.Height;
+                result[i, j] = Noise(x, y);
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Cubic noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Cubic noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 
     private double Noise(double x, double y)
     {
-        int X = (int)Math.Floor(x) & 255;
-        int Y = (int)Math.Floor(y) & 255;
+        var X = (int)Math.Floor(x) & 255;
+        var Y = (int)Math.Floor(y) & 255;
 
         x -= Math.Floor(x);
         y -= Math.Floor(y);
 
-        double u = Fade(x);
-        double v = Fade(y);
+        var u = Fade(x);
+        var v = Fade(y);
 
-        int A = p[X] + Y;
-        int AA = p[A];
-        int AB = p[A + 1];
-        int B = p[X + 1] + Y;
-        int BA = p[B];
-        int BB = p[B + 1];
+        var A = p[X] + Y;
+        var AA = p[A];
+        var AB = p[A + 1];
+        var B = p[X + 1] + Y;
+        var BA = p[B];
+        var BB = p[B + 1];
 
-        double gradAA = Grad(p[AA], x, y);
-        double gradAB = Grad(p[AB], x, y - 1);
-        double gradBA = Grad(p[BA], x - 1, y);
-        double gradBB = Grad(p[BB], x - 1, y - 1);
+        var gradAA = Grad(p[AA], x, y);
+        var gradAB = Grad(p[AB], x, y - 1);
+        var gradBA = Grad(p[BA], x - 1, y);
+        var gradBB = Grad(p[BB], x - 1, y - 1);
 
-        double noise = Lerp(Lerp(gradAA, gradBA, u), Lerp(gradAB, gradBB, u), v);
+        var noise = Lerp(Lerp(gradAA, gradBA, u), Lerp(gradAB, gradBB, u), v);
 
         return (noise + 1) / 2.0; // Adjust range to [0, 1]
     }
@@ -77,9 +72,9 @@ public class CubicNoise : INoiseAlgorithm
 
     private static double Grad(int hash, double x, double y)
     {
-        int h = hash & 15;
-        double u = h < 8 ? x : y;
-        double v = h < 4 ? y : h == 12 || h == 14 ? x : 0;
+        var h = hash & 15;
+        var u = h < 8 ? x : y;
+        var v = h < 4 ? y : h == 12 || h == 14 ? x : 0;
         return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
     }
 

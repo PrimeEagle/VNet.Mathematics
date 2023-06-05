@@ -1,40 +1,32 @@
 ﻿// ReSharper disable UnusedMember.Global
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
 
 namespace VNet.Mathematics.Randomization.Noise.Other;
+
 // Delta noise, also known as Dirac noise or impulse noise, represents an instantaneous, infinitely short noise burst. It is
 // often used to simulate or model abrupt or transient events in a signal.
-public class DeltaNoise : INoiseAlgorithm
+public class DeltaNoise : NoiseBase
 {
-    private double _deltaValue;
-    private int _deltaIndex;
-
-    public DeltaNoise(double deltaValue = 1.0, int deltaIndex = 0)
+    public DeltaNoise(IDeltaNoiseAlgorithmArgs args):base(args)
     {
-        _deltaValue = deltaValue;
-        _deltaIndex = deltaIndex;
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] Generate()
     {
-        int width = Args.Width;
-        int height = Args.Height;
+        var width = Args.Width;
+        var height = Args.Height;
 
-        double[,] result = new double[height, width];
+        var result = new double[height, width];
 
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
-            {
-                result[i, j] = i == _deltaIndex && j == _deltaIndex ? _deltaValue * Args.Scale : 0.0;
-            }
-        }
+        for (var i = 0; i < height; i++)
+            for (var j = 0; j < width; j++)
+                result[i, j] = i == ((IDeltaNoiseAlgorithmArgs)Args).DeltaIndex && j == ((IDeltaNoiseAlgorithmArgs)Args).DeltaIndex ? ((IDeltaNoiseAlgorithmArgs)Args).DeltaValue * Args.Scale : 0.0;
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Delta noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Delta noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }

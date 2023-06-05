@@ -1,41 +1,36 @@
 ﻿// ReSharper disable UnusedMember.Global
 
 namespace VNet.Mathematics.Randomization.Noise.Other;
+
 // Digital noise refers to noise that is introduced during digital signal processing or data acquisition. It can occur due to quantization errors,
 // sampling limitations, or processing artifacts. Digital noise can manifest as random fluctuations, quantization noise, or other distortions in digital signals.
-public class DigitalNoise : INoiseAlgorithm
+public class DigitalNoise : NoiseBase
 {
-    private int _quantizeLevels;
-
-    public DigitalNoise(int quantizeLevels = 256)
+    public DigitalNoise(INoiseAlgorithmArgs args) : base(args)
     {
-        _quantizeLevels = quantizeLevels;
     }
 
-    public double[,] Generate(INoiseAlgorithmArgs args)
+    public override double[,] GenerateRaw()
     {
-        int width = Args.Width;
-        int height = Args.Height;
+        var width = Args.Width;
+        var height = Args.Height;
 
-        double[,] result = new double[height, width];
+        var result = new double[height, width];
 
-        for (int i = 0; i < height; i++)
-        {
-            for (int j = 0; j < width; j++)
+        for (var i = 0; i < height; i++)
+            for (var j = 0; j < width; j++)
             {
-                double randomValue = Args.RandomDistributionAlgorithm.NextDouble();
-                int quantizedValue = (int)(randomValue * _quantizeLevels);
-                double scaledValue = quantizedValue / (double)(_quantizeLevels - 1);
+                var randomValue = Args.RandomDistributionAlgorithm.NextDouble();
+                var quantizedValue = (int)(randomValue * Args.QuantizeLevels);
+                var scaledValue = quantizedValue / (double)(Args.QuantizeLevels - 1);
                 result[i, j] = scaledValue * Args.Scale;
             }
-        }
 
         return result;
     }
 
-    public double GenerateSingleSample(INoiseAlgorithmArgs args)
+    public override double GenerateSingleSampleRaw()
     {
-        // Digital noise is generated for the entire grid, so generating a single sample is not applicable.
-        throw new NotImplementedException();
+        throw new NotImplementedException("Diamond-Square noise is generated for the entire grid, so generating a single sample is not applicable.");
     }
 }
