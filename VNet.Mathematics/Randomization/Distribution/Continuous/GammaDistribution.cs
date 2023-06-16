@@ -83,12 +83,10 @@ namespace VNet.Mathematics.Randomization.Distribution.Continuous
                         } while (v <= 0.0);
 
                         v = v * v * v;
-                        double u = _randomGenerator.NextDouble();
+                        var u = _randomGenerator.NextDouble();
                         if ((u < 1.0 - 0.0331 * (x * x) * (x * x)) || (Math.Log(u) < 0.5 * x * x + d * (1.0 - v + Math.Log(v))))
                             return GenericNumber<T>.FromDouble(Scale * d * v);
                     }
-
-                    break;
                 }
                 case <= 0.0:
                     throw new ArgumentOutOfRangeException(nameof(Shape), "Must be positive.");

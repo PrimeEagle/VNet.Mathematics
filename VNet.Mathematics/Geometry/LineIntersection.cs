@@ -16,17 +16,13 @@ namespace VNet.Mathematics.Geometry
 
             if (lineA.Left.X.CompareTo(lineB.Left.X) > 0)
             {
-                var tmp = lineA;
-                lineA = lineB;
-                lineB = tmp;
+                (lineA, lineB) = (lineB, lineA);
             }
             else if (lineA.Left.X.CompareTo(lineB.Left.X) == 0)
             {
                 if (lineA.Left.Y.CompareTo(lineB.Left.Y) > 0)
                 {
-                    var tmp = lineA;
-                    lineA = lineB;
-                    lineB = tmp;
+                    (lineA, lineB) = (lineB, lineA);
                 }
             }
 
