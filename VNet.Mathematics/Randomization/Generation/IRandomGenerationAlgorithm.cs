@@ -10,7 +10,9 @@ public interface IRandomGenerationAlgorithm : IRandomizationAlgorithm
     public int Next(int maxValue);
     public int Next(int minValue, int maxValue);
     public float NextSingle();
+    public float NextSingle(float minValue, float maxValue);
     public double NextDouble();
+    public double NextDouble(double minValue, double maxValue);
     public void NextBytes(Span<byte> buffer);
     public void NextBytes(byte[] buffer);
     public long NextInt64();
@@ -28,7 +30,9 @@ public interface IRandomGenerationAlgorithm<out TSeed, TResult> : IRandomGenerat
     public new TResult Next(TResult maxValue);
     public new TResult Next(TResult minValue, TResult maxValue);
     public new float NextSingle();
+    public new float NextSingle(float minValue, float maxValue);
     public new double NextDouble();
+    public new double NextDouble(double minValue, double maxValue);
     public new void NextBytes(Span<byte> buffer);
     public new void NextBytes(byte[] buffer);
     public new long NextInt64();

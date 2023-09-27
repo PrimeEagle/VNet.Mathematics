@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using VNet.System.Conversion;
@@ -155,9 +156,19 @@ public abstract class RandomGenerationBase<TSeed, TResult> : IRandomGenerationAl
         return Convert.ToSingle(Next());
     }
 
+    public virtual float NextSingle(float minValue, float maxValue)
+    {
+        return NextSingle() * (maxValue - minValue) + minValue;
+    }
+
     public virtual double NextDouble()
     {
         return Convert.ToDouble(Next());
+    }
+
+    public virtual double NextDouble(double minValue, double maxValue)
+    {
+        return NextDouble() * (maxValue - minValue) + minValue;
     }
 
     public virtual void NextBytes(Span<byte> buffer)
