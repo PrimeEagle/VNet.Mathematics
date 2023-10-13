@@ -1,6 +1,6 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class LfgGenerator : RandomGenerationBase<int, int>
+public class LfgGenerator : RandomGenerationBase
 {
     private const int DefaultLag = 16;
     private int _index;
@@ -16,61 +16,31 @@ public class LfgGenerator : RandomGenerationBase<int, int>
         _index = 0;
         _lag = DefaultLag;
 
-        Initialize(Seeds[0], Seeds[1]);
+        this.Seeds = GetSeedsFromTime(2);
+        Initialize((int)Seeds[0], (int)Seeds[1]);
     }
 
-    public LfgGenerator(IEnumerable<int> seeds) : base(seeds)
+    public LfgGenerator(double seed1, double seed2)
     {
         _state = new int[DefaultLag];
         _index = 0;
         _lag = DefaultLag;
+        this.Seeds = new List<double>()
+        {
+            seed1,
+            seed2
+        };
 
-        Initialize(Seeds[0], Seeds[1]);
+        Initialize((int)Seeds[0], (int)Seeds[1]);
     }
 
-    public LfgGenerator(IEnumerable<string> seeds) : base(seeds)
+   public override int Next()
     {
-        _state = new int[DefaultLag];
-        _index = 0;
-        _lag = DefaultLag;
-
-        Initialize(Seeds[0], Seeds[1]);
-    }
-
-    public LfgGenerator(IEnumerable<int> seeds, int minValue, int maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = new int[DefaultLag];
-        _index = 0;
-        _lag = DefaultLag;
-
-        Initialize(Seeds[0], Seeds[1]);
-    }
-
-    public LfgGenerator(IEnumerable<string> seeds, int minValue, int maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = new int[DefaultLag];
-        _index = 0;
-        _lag = DefaultLag;
-
-        Initialize(Seeds[0], Seeds[1]);
-    }
-
-    public LfgGenerator(int minValue, int maxValue) : base(minValue, maxValue)
-    {
-        _state = new int[DefaultLag];
-        _index = 0;
-        _lag = DefaultLag;
-
-        Initialize(Seeds[0], Seeds[1]);
-    }
-
-    public override int Next()
-    {
-        var result = (_state[_index] + _state[(_index - _lag + _lag) % _lag]) % (MaxValue - MinValue + 1) + MinValue;
-        _state[_index] = result;
+        var result = (_state[_index] + _state[(_index - _lag + _lag) % _lag]) & 0xFFFFFFFF;
+        _state[_index] = (int)result;
         _index = (_index + 1) % _lag;
 
-        return result;
+        return (int)result;
     }
 
     private void Initialize(int seed1, int seed2)

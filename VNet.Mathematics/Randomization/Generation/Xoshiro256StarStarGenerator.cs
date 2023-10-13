@@ -1,42 +1,30 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class Xoshiro256StarStarGenerator : RandomGenerationBase<ulong, ulong>
+public class Xoshiro256StarStarGenerator : RandomGenerationBase
 {
     private readonly List<ulong> _state;
-    protected new uint NumberOfSeeds = 4;
 
 
     public Xoshiro256StarStarGenerator()
     {
-        _state = Seeds;
+        _state = new List<ulong>();
+        this.Seeds = new List<double>();
+        this.GetSeedsFromTime(4);
     }
 
-    public Xoshiro256StarStarGenerator(IEnumerable<ulong> seeds) : base(seeds)
+    public Xoshiro256StarStarGenerator(double seed1, double seed2, double seed3, double seed4)
     {
-        _state = Seeds;
+        _state = new List<ulong>();
+        this.Seeds = new List<double>()
+        {
+            seed1,
+            seed2,
+            seed3,
+            seed4
+        };
     }
 
-    public Xoshiro256StarStarGenerator(IEnumerable<string> seeds) : base(seeds)
-    {
-        _state = Seeds;
-    }
-
-    public Xoshiro256StarStarGenerator(IEnumerable<ulong> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public Xoshiro256StarStarGenerator(IEnumerable<string> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public Xoshiro256StarStarGenerator(ulong minValue, ulong maxValue) : base(minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public override ulong Next()
+    public override int Next()
     {
         var result = RotateLeft(_state[1] * 5, 7) * 9;
         var t = _state[1] << 17;
@@ -49,7 +37,7 @@ public class Xoshiro256StarStarGenerator : RandomGenerationBase<ulong, ulong>
         _state[2] ^= t;
         _state[3] = RotateLeft(_state[3], 45);
 
-        return result;
+        return (int)result;
     }
 
     private static ulong RotateLeft(ulong x, int k)

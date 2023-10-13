@@ -12,15 +12,11 @@ namespace VNet.Mathematics.Randomization.Distribution
         protected RandomDistributionBase()
         {
             _randomGenerator = new DotNetGenerator();
-            _randomGenerator.MinValue = 0;
-            _randomGenerator.MaxValue = 2;
         }
 
         protected RandomDistributionBase(IRandomGenerationAlgorithm randomGenerator)
         {
             _randomGenerator = randomGenerator;
-            _randomGenerator.MinValue = 0;
-            _randomGenerator.MaxValue = 2;
         }
  
         public int Next()
@@ -56,7 +52,7 @@ namespace VNet.Mathematics.Randomization.Distribution
             }
             else if (typeof(T) == typeof(long))
             {
-                return GenericNumber<T>.FromDouble(_randomGenerator.NextInt64());
+                return GenericNumber<T>.FromDouble(_randomGenerator.NextLong());
             }
             else if (typeof(T) == typeof(float))
             {

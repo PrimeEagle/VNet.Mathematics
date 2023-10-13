@@ -1,40 +1,18 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class XorShift32Generator : RandomGenerationBase<uint, uint>
+public class XorShift32Generator : RandomGenerationBase
 {
     private uint _state;
 
-    public XorShift32Generator()
+    public XorShift32Generator() : base()
     {
-        _state = Seeds[0];
     }
 
-    public XorShift32Generator(uint seed) : base(seed)
+    public XorShift32Generator(double seed) : base(seed)
     {
-        _state = Seeds[0];
     }
 
-    public XorShift32Generator(string seed) : base(seed)
-    {
-        _state = Seeds[0];
-    }
-
-    public XorShift32Generator(uint seed, uint minValue, uint maxValue) : base(seed, minValue, maxValue)
-    {
-        _state = Seeds[0];
-    }
-
-    public XorShift32Generator(string seed, uint minValue, uint maxValue) : base(seed, minValue, maxValue)
-    {
-        _state = Seeds[0];
-    }
-
-    public XorShift32Generator(uint minValue, uint maxValue) : base(minValue, maxValue)
-    {
-        _state = Seeds[0];
-    }
-
-    public override uint Next()
+    public override int Next()
     {
         var x = _state;
         x ^= x << 13;
@@ -42,6 +20,6 @@ public class XorShift32Generator : RandomGenerationBase<uint, uint>
         x ^= x << 5;
         _state = x;
 
-        return x % (MaxValue - MinValue + 1) + MinValue;
+        return (int)(x & 0xFFFFFFFF);
     }
 }

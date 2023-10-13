@@ -1,6 +1,6 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class Well512Generator : RandomGenerationBase<ulong, uint>
+public class Well512Generator : RandomGenerationBase
 {
     private const int StateSize = 16;
     private const int R = 16;
@@ -12,49 +12,21 @@ public class Well512Generator : RandomGenerationBase<ulong, uint>
     private int _index;
 
 
-    public Well512Generator()
+    public Well512Generator() : base()
     {
         _state = new uint[StateSize];
         _index = 0;
-        Initialize(Seeds[0]);
+        Initialize((ulong)Seeds[0]);
     }
 
-    public Well512Generator(IEnumerable<ulong> seeds) : base(seeds)
+    public Well512Generator(double seed) : base(seed)
     {
         _state = new uint[StateSize];
         _index = 0;
-        Initialize(Seeds[0]);
+        Initialize((ulong)Seeds[0]);
     }
 
-    public Well512Generator(IEnumerable<string> seeds) : base(seeds)
-    {
-        _state = new uint[StateSize];
-        _index = 0;
-        Initialize(Seeds[0]);
-    }
-
-    public Well512Generator(IEnumerable<ulong> seeds, uint minValue, uint maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = new uint[StateSize];
-        _index = 0;
-        Initialize(Seeds[0]);
-    }
-
-    public Well512Generator(IEnumerable<string> seeds, uint minValue, uint maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = new uint[StateSize];
-        _index = 0;
-        Initialize(Seeds[0]);
-    }
-
-    public Well512Generator(uint minValue, uint maxValue) : base(minValue, maxValue)
-    {
-        _state = new uint[StateSize];
-        _index = 0;
-        Initialize(Seeds[0]);
-    }
-
-    public override uint Next()
+   public override int Next()
     {
         var z0 = _state[(_index + 15) & 15];
         var z1 = _state[_index] ^ _state[(_index + M1) & 15] ^ (_state[_index] >> 16) ^ (_state[(_index + M2) & 15] >> 15);
@@ -62,7 +34,7 @@ public class Well512Generator : RandomGenerationBase<ulong, uint>
         _state[(_index + 15) & 15] = z0 ^ (z0 << 2) ^ (z1 << 18) ^ (z0 << 28) ^ _state[(_index + M3) & 15] ^ (_state[(_index + 15) & 15] << 13);
         _index = (_index + 15) & 15;
 
-        return z1 % (MaxValue - MinValue + 1) + MinValue;
+        return (int)(z1 & 0xFFFFFFFF);
     }
 
     private void Initialize(ulong seed)
@@ -75,10 +47,5 @@ public class Well512Generator : RandomGenerationBase<ulong, uint>
             s ^= s >> 8;
             _state[i] = (uint) (s & uint.MaxValue);
         }
-    }
-
-    private void Initialize(ulong[] seed)
-    {
-        for (var i = 0; i < StateSize && i < seed.Length; i++) _state[i] = (uint) (seed[i] & uint.MaxValue);
     }
 }

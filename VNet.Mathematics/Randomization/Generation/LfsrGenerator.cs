@@ -1,36 +1,20 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class LfsrGenerator : RandomGenerationBase<ulong, ulong>
+public class LfsrGenerator : RandomGenerationBase
 {
-    public LfsrGenerator()
+    public LfsrGenerator() : base()
     {
     }
 
-    public LfsrGenerator(IEnumerable<ulong> seeds) : base(seeds)
+    public LfsrGenerator(double seed) : base(seed)
     {
     }
 
-    public LfsrGenerator(IEnumerable<string> seeds) : base(seeds)
+    public override int Next()
     {
-    }
+        var bit = (((int)Seeds[0] >> 0) ^ ((int)Seeds[0] >> 2) ^ ((int)Seeds[0] >> 3) ^ ((int)Seeds[0] >> 5)) & 1;
+        Seeds[0] = ((int)Seeds[0] >> 1) | (bit << 31);
 
-    public LfsrGenerator(IEnumerable<ulong> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-    }
-
-    public LfsrGenerator(IEnumerable<string> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-    }
-
-    public LfsrGenerator(ulong minValue, ulong maxValue) : base(minValue, maxValue)
-    {
-    }
-
-    public override ulong Next()
-    {
-        var bit = ((Seeds[0] >> 0) ^ (Seeds[0] >> 2) ^ (Seeds[0] >> 3) ^ (Seeds[0] >> 5)) & 1;
-        Seeds[0] = (Seeds[0] >> 1) | (bit << 31);
-
-        return Seeds[0] % (MaxValue - MinValue + 1) + MinValue;
+        return (int)((int)Seeds[0] & 0xFFFFFFFF);
     }
 }

@@ -1,231 +1,158 @@
-﻿using System;
-using System.Numerics;
-using System.Security.Cryptography;
-using System.Text;
-using VNet.System.Conversion;
-
-// ReSharper disable MemberCanBePrivate.Global
+﻿// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
+// ReSharper disable CompareOfFloatsByEqualityOperator
+#pragma warning disable CA1822
 
 namespace VNet.Mathematics.Randomization.Generation;
 
-public abstract class RandomGenerationBase<TSeed, TResult> : IRandomGenerationAlgorithm<TSeed, TResult>
-                                                             where TSeed : notnull, INumber<TSeed>
-                                                             where TResult : notnull, INumber<TResult>
+public abstract class RandomGenerationBase : IRandomGenerationAlgorithm
 {
-    // ReSharper disable once MemberCanBeProtected.Global
-    public new List<TSeed> Seeds { get; init; }
-    public new TResult MinValue { get; set; }
+    protected List<double> Seeds { get; init; }
+    protected readonly object Lock = new();
 
-    int IRandomGenerationAlgorithm.MinValue { get; set; }
-    int IRandomGenerationAlgorithm.MaxValue { get; set; }
 
-    int IRandomGenerationAlgorithm.Next()
+
+    public abstract int Next();
+
+    public long NextLong()
     {
-        throw new NotImplementedException();
+        var lowBits = Next();
+        var highBits = Next();
+
+        return ((long)highBits << 32) | (uint)lowBits;
+    }
+
+    public float NextSingle()
+    {
+        return (Next() & 0x7FFFFFFF) * (1.0f / 0x7FFFFFFF);
+    }
+
+    public double NextDouble()
+    {
+        return ((long)(Next() & 0x000FFFFF) << 32 | (uint)Next()) * (1.0 / (long)0x20000000000000);
     }
 
     public int Next(int maxValue)
     {
-        throw new NotImplementedException();
+        var mask = int.MaxValue - int.MaxValue % maxValue;
+
+        while (true)
+        {
+            var value = Next();
+            if (value < mask)
+                return value % maxValue;
+        }
+    }
+
+    public long NextLong(long maxValue)
+    {
+        var mask = long.MaxValue - long.MaxValue % maxValue;
+
+        while (true)
+        {
+            var value = NextLong();
+            if (value < mask)
+                return value % maxValue;
+        }
+    }
+    
+    public float NextSingle(float maxValue)
+    {
+        var mask = float.MaxValue - float.MaxValue % maxValue;
+
+        while (true)
+        {
+            var value = NextSingle();
+            if (value < mask)
+                return value % maxValue;
+        }
+    }
+    
+    public double NextDouble(double maxValue)
+    {
+        var mask = double.MaxValue - double.MaxValue % maxValue;
+
+        while (true)
+        {
+            var value = NextDouble();
+            if (value < mask)
+                return value % maxValue;
+        }
     }
 
     public int Next(int minValue, int maxValue)
     {
-        throw new NotImplementedException();
+        return minValue + Next(maxValue - minValue);
     }
-    
 
-    public new TResult MaxValue { get; set; }
-    protected const uint NumberOfSeeds = 1;
+    public long NextLong(long minValue, long maxValue)
+    {
+        return minValue + NextLong(maxValue - minValue);
+    }
 
+    public float NextSingle(float minValue, float maxValue)
+    {
+        return minValue + NextSingle() * (maxValue - minValue);
+    }
+
+    public double NextDouble(double minValue, double maxValue)
+    {
+        return minValue + NextDouble() * (maxValue - minValue);
+    }
+
+    public int NextInclusive(int minValue, int maxValue)
+    {
+        return Next(minValue, maxValue + 1);
+    }
+
+    public long NextLongInclusive(long minValue, long maxValue)
+    {
+        return NextLong(minValue, maxValue + 1);
+    }
+
+    public float NextSingleInclusive(float minValue, float maxValue)
+    {
+        while (true)
+        {
+            var result = NextSingle(minValue, maxValue);
+            if (result != maxValue)
+                return result;
+        }
+    }
+
+    public double NextDoubleInclusive(double minValue, double maxValue)
+    {
+        while (true)
+        {
+            var result = NextDouble(minValue, maxValue);
+            if (result != maxValue)
+                return result;
+        }
+    }
 
     protected RandomGenerationBase()
     {
-        Seeds = GetSeedsFromTime(NumberOfSeeds);
-        MinValue = GetMinValue();
-        MaxValue = GetMaxValue();
+        this.Seeds = new List<double>();
+        this.Seeds = GetSeedsFromTime(1);
     }
 
-    protected RandomGenerationBase(TSeed seed)
+    protected RandomGenerationBase(double seed)
     {
-        Seeds = new List<TSeed> {seed};
-        MinValue = GetMaxValue();
-        MaxValue = GetMaxValue();
-    }
-
-    protected RandomGenerationBase(IEnumerable<TSeed> seeds)
-    {
-        Seeds = seeds.ToList();
-        MinValue = GetMaxValue();
-        MaxValue = GetMaxValue();
-    }
-
-    protected RandomGenerationBase(string seed)
-    {
-        Seeds = new List<TSeed> {StringToValue(seed)};
-        MinValue = GetMaxValue();
-        MaxValue = GetMaxValue();
-    }
-
-    protected RandomGenerationBase(IEnumerable<string> seeds)
-    {
-        Seeds = seeds.Select(StringToValue).ToList();
-        MinValue = GetMaxValue();
-        MaxValue = GetMaxValue();
-    }
-
-    protected RandomGenerationBase(TResult minValue, TResult maxValue)
-    {
-        Seeds = GetSeedsFromTime(NumberOfSeeds);
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
-
-    protected RandomGenerationBase(TSeed seed, TResult minValue, TResult maxValue)
-    {
-        Seeds = new List<TSeed> {seed};
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
-
-    protected RandomGenerationBase(IEnumerable<TSeed> seeds, TResult minValue, TResult maxValue)
-    {
-        Seeds = seeds.ToList();
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
-
-    protected RandomGenerationBase(string seed, TResult minValue, TResult maxValue)
-    {
-        Seeds = new List<TSeed> {StringToValue(seed)};
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
-
-    protected RandomGenerationBase(IEnumerable<string> seeds, TResult minValue, TResult maxValue)
-    {
-        Seeds = seeds.Select(StringToValue).ToList();
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
-
-    private static TSeed StringToValue(string seed)
-    {
-        var hash = BitConverter.ToInt32(SHA1.HashData(Encoding.UTF8.GetBytes(seed)));
-
-        return GenericNumber<TSeed>.FromDouble(hash);
-    }
-
-    public virtual TResult Next()
-    {
-        throw new NotImplementedException();
-    }
-
-    // ReSharper disable once MemberCanBeProtected.Global
-    public virtual TResult Next(TResult maxValue)
-    {
-        var tempMinValue = GenericNumber<TResult>.FromDouble(0) ?? throw new ArgumentNullException(nameof(maxValue));
-
-        MinValue = GenericNumber<TResult>.FromDouble(0);
-        MaxValue = maxValue;
-
-        var result = Next();
-
-        MinValue = tempMinValue;
-        MaxValue = maxValue;
-
-        return result;
-    }
-
-    // ReSharper disable once MemberCanBeProtected.Global
-    public virtual TResult Next(TResult minValue, TResult maxValue)
-    {
-        MinValue = GenericNumber<TResult>.FromDouble(0);
-        MaxValue = maxValue;
-
-        var result = Next();
-
-        MinValue = minValue;
-        MaxValue = maxValue;
-
-        return result;
-    }
-
-    public virtual float NextSingle()
-    {
-        return Convert.ToSingle(Next());
-    }
-
-    public virtual float NextSingle(float minValue, float maxValue)
-    {
-        return NextSingle() * (maxValue - minValue) + minValue;
-    }
-
-    public virtual double NextDouble()
-    {
-        return Convert.ToDouble(Next());
-    }
-
-    public virtual double NextDouble(double minValue, double maxValue)
-    {
-        return NextDouble() * (maxValue - minValue) + minValue;
-    }
-
-    public virtual void NextBytes(Span<byte> buffer)
-    {
-        for (var i = 0; i < buffer.Length; i++) buffer[i] = Convert.ToByte(Next());
-    }
-
-    public virtual void NextBytes(byte[] buffer)
-    {
-        for (var i = 0; i < buffer.Length; i++) buffer[i] = Convert.ToByte(Next());
-    }
-
-    public virtual long NextInt64()
-    {
-        return Convert.ToInt64(Next());
-    }
-
-    public virtual long NextInt64(long maxValue)
-    {
-        return Convert.ToInt64(Next(GenericNumber<TResult>.FromDouble(maxValue)));
-    }
-
-    public new long NextInt64(long minValue, long maxValue)
-    {
-        return Convert.ToInt64(Next(GenericNumber<TResult>.FromDouble(minValue), GenericNumber<TResult>.FromDouble(maxValue)));
-    }
-
-    private static TResult GetMaxValue()
-    {
-        try
+        this.Seeds = new List<double>()
         {
-            return (TResult) (typeof(TResult).GetField("MaxValue")?.GetValue(null) ?? default(TResult));
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Unsupported type {typeof(TResult)}");
-        }
+            seed
+        };
     }
 
-    private static TResult GetMinValue()
+    protected List<double> GetSeedsFromTime(uint numberOfSeeds)
     {
-        try
+        var result = new List<double>();
+        for (var i = 0; i < numberOfSeeds; i++)
         {
-            return (TResult) (typeof(TResult).GetField("MinValue")?.GetValue(null) ?? default(TResult));
+            Thread.Sleep(1);
+            result.Add(DateTime.Now.Ticks);
         }
-        catch
-        {
-            throw new InvalidOperationException($"Unsupported type {typeof(TResult)}");
-        }
-    }
-
-    protected List<TSeed> GetSeedsFromTime(uint numberOfSeeds)
-    {
-        var result = new List<TSeed>();
-
-        for (var i = 0; i < numberOfSeeds; i++) result.Add(GenericNumber<TSeed>.FromDouble(DateTime.Now.Ticks + 1));
-
         return result;
     }
 }

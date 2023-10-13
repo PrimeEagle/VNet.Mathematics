@@ -1,36 +1,25 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class GaloisLfsrGenerator : RandomGenerationBase<uint, uint>
+public class GaloisLfsrGenerator : RandomGenerationBase
 {
-    public GaloisLfsrGenerator()
+    public GaloisLfsrGenerator() : base()
     {
     }
 
-    public GaloisLfsrGenerator(IEnumerable<uint> seeds) : base(seeds)
+    public GaloisLfsrGenerator(double seed) : base(seed)
     {
     }
 
-    public GaloisLfsrGenerator(IEnumerable<string> seeds) : base(seeds)
+    public override int Next()
     {
-    }
+        var bit = ((int)Seeds[0] & 1) ^ (((int)Seeds[0] >> 1) & 1);
+        var result = ((int)Seeds[0] >> 1) | (bit << 31);
 
-    public GaloisLfsrGenerator(IEnumerable<uint> seeds, uint minValue, uint maxValue) : base(seeds, minValue, maxValue)
-    {
-    }
+        if (result < 0)
+        {
+            result += int.MaxValue;
+        }
 
-    public GaloisLfsrGenerator(IEnumerable<string> seeds, uint minValue, uint maxValue) : base(seeds, minValue, maxValue)
-    {
-    }
-
-    public GaloisLfsrGenerator(uint minValue, uint maxValue) : base(minValue, maxValue)
-    {
-    }
-
-    public override uint Next()
-    {
-        var bit = (Seeds[0] & 1) ^ ((Seeds[0] >> 1) & 1);
-        Seeds[0] = (Seeds[0] >> 1) | (bit << 31);
-
-        return Seeds[0] % (MaxValue - MinValue + 1) + MinValue;
+        return result;
     }
 }

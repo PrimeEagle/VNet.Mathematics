@@ -1,4 +1,5 @@
-﻿namespace VNet.Mathematics.Randomization.Generation
+﻿// ReSharper disable MemberCanBePrivate.Global
+namespace VNet.Mathematics.Randomization.Generation
 {
     public class Dice
     {
@@ -31,13 +32,11 @@
 
         public int Roll(int numberOfSides, int numberOfRolls)
         {
-            int sum = 0;
-            RandomGenerator.MinValue = 1;
-            RandomGenerator.MaxValue = numberOfSides;
+            var sum = 0;
 
-            for (int i = 1; i < numberOfRolls; i++)
+            for (var i = 1; i < numberOfRolls; i++)
             {
-                sum += (int)RandomGenerator.Next();
+                sum += (int)RandomGenerator.NextInclusive(1, numberOfSides);
             }
 
             return sum;

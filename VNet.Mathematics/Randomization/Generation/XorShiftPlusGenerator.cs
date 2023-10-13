@@ -1,42 +1,28 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class XorShiftPlusGenerator : RandomGenerationBase<ulong, ulong>
+public class XorShiftPlusGenerator : RandomGenerationBase
 {
-    protected new uint NumberOfSeeds = 2;
     private readonly List<ulong> _state;
-    
+
 
     public XorShiftPlusGenerator()
     {
-        _state = Seeds;
+        _state = new List<ulong>();
+        this.Seeds = new List<double>();
+        this.GetSeedsFromTime(2);
     }
 
-    public XorShiftPlusGenerator(IEnumerable<ulong> seeds) : base(seeds)
+    public XorShiftPlusGenerator(double seed1, double seed2)
     {
-        _state = Seeds;
+        _state = new List<ulong>();
+        this.Seeds = new List<double>()
+        {
+            seed1,
+            seed2
+        };
     }
 
-    public XorShiftPlusGenerator(IEnumerable<string> seeds) : base(seeds)
-    {
-        _state = Seeds;
-    }
-
-    public XorShiftPlusGenerator(IEnumerable<ulong> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public XorShiftPlusGenerator(IEnumerable<string> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public XorShiftPlusGenerator(ulong minValue, ulong maxValue) : base(minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public override ulong Next()
+    public override int Next()
     {
         var x = _state[0];
         var y = _state[1];
@@ -44,6 +30,6 @@ public class XorShiftPlusGenerator : RandomGenerationBase<ulong, ulong>
         x ^= x << 23;
         _state[1] = x ^ y ^ (x >> 18) ^ (y >> 5);
 
-        return _state[1] % (MaxValue - MinValue + 1) + MinValue;
+        return (int)(_state[1] & 0xFFFFFFFF);
     }
 }

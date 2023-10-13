@@ -1,6 +1,8 @@
-﻿namespace VNet.Mathematics.Randomization.Generation;
+﻿// ReSharper disable UnusedType.Global
+// ReSharper disable InconsistentNaming
+namespace VNet.Mathematics.Randomization.Generation;
 
-public class MersenneTwisterMT19937Generator : RandomGenerationBase<ulong, ulong>
+public class MersenneTwisterMT19937Generator : RandomGenerationBase
 {
     private const int N = 624;
     private const int M = 397;
@@ -12,49 +14,21 @@ public class MersenneTwisterMT19937Generator : RandomGenerationBase<ulong, ulong
     private int _index;
 
 
-    public MersenneTwisterMT19937Generator()
+    public MersenneTwisterMT19937Generator() : base()
     {
         _state = new ulong[N];
         _index = N + 1;
-        Initialize(Seeds[0]);
+        Initialize((int)Seeds[0]);
     }
 
-    public MersenneTwisterMT19937Generator(IEnumerable<ulong> seeds) : base(seeds)
+    public MersenneTwisterMT19937Generator(double seed) : base(seed)
     {
         _state = new ulong[N];
         _index = N + 1;
-        Initialize(Seeds[0]);
+        Initialize((int)Seeds[0]);
     }
 
-    public MersenneTwisterMT19937Generator(IEnumerable<string> seeds) : base(seeds)
-    {
-        _state = new ulong[N];
-        _index = N + 1;
-        Initialize(Seeds[0]);
-    }
-
-    public MersenneTwisterMT19937Generator(IEnumerable<ulong> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = new ulong[N];
-        _index = N + 1;
-        Initialize(Seeds[0]);
-    }
-
-    public MersenneTwisterMT19937Generator(IEnumerable<string> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = new ulong[N];
-        _index = N + 1;
-        Initialize(Seeds[0]);
-    }
-
-    public MersenneTwisterMT19937Generator(ulong minValue, ulong maxValue) : base(minValue, maxValue)
-    {
-        _state = new ulong[N];
-        _index = N + 1;
-        Initialize(Seeds[0]);
-    }
-
-    public override ulong Next()
+   public override int Next()
     {
         if (_index >= N)
             GenerateNumbers();
@@ -65,12 +39,12 @@ public class MersenneTwisterMT19937Generator : RandomGenerationBase<ulong, ulong
         y ^= (y << 15) & 0xEFC60000UL;
         y ^= y >> 18;
 
-        return y % (MaxValue - MinValue + 1) + MinValue;
+        return (int)(y & 0xFFFFFFFF);
     }
 
-    private void Initialize(ulong seed)
+    private void Initialize(double seed)
     {
-        _state[0] = seed & 0xFFFFFFFFUL;
+        _state[0] = (ulong)((ulong)seed & 0xFFFFFFFFUL);
         for (var i = 1; i < N; i++) _state[i] = (1812433253UL * (_state[i - 1] ^ (_state[i - 1] >> 30)) + (ulong) i) & 0xFFFFFFFFUL;
     }
 

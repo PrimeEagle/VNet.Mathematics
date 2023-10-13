@@ -1,40 +1,20 @@
 ﻿namespace VNet.Mathematics.Randomization.Generation;
 
-public class XorShift64Generator : RandomGenerationBase<ulong, ulong>
+public class XorShift64Generator : RandomGenerationBase
 {
     private ulong _state;
 
-    public XorShift64Generator()
+    public XorShift64Generator() : base()
     {
-        _state = Seeds[0];
+        _state = (ulong)Seeds[0];
     }
 
-    public XorShift64Generator(ulong seed) : base(seed)
+    public XorShift64Generator(double seed) : base(seed)
     {
-        _state = Seeds[0];
+        _state = (ulong)Seeds[0];
     }
 
-    public XorShift64Generator(string seed) : base(seed)
-    {
-        _state = Seeds[0];
-    }
-
-    public XorShift64Generator(ulong seed, ulong minValue, ulong maxValue) : base(seed, minValue, maxValue)
-    {
-        _state = Seeds[0];
-    }
-
-    public XorShift64Generator(string seed, ulong minValue, ulong maxValue) : base(seed, minValue, maxValue)
-    {
-        _state = Seeds[0];
-    }
-
-    public XorShift64Generator(ulong minValue, ulong maxValue) : base(minValue, maxValue)
-    {
-        _state = Seeds[0];
-    }
-
-    public override ulong Next()
+    public override int Next()
     {
         var x = _state;
         x ^= x << 13;
@@ -42,6 +22,6 @@ public class XorShift64Generator : RandomGenerationBase<ulong, ulong>
         x ^= x << 5;
         _state = x;
 
-        return x % (MaxValue - MinValue + 1) + MinValue;
+        return (int)(x & 0xFFFFFFFF);
     }
 }

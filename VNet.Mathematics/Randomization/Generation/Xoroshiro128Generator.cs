@@ -1,42 +1,28 @@
-﻿namespace VNet.Mathematics.Randomization.Generation;
+﻿#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+namespace VNet.Mathematics.Randomization.Generation;
 
-public class Xoroshiro128Generator : RandomGenerationBase<ulong, ulong>
+public class Xoroshiro128Generator : RandomGenerationBase
 {
     private readonly List<ulong> _state;
-    protected new uint NumberOfSeeds = 2;
 
 
     public Xoroshiro128Generator()
     {
-        _state = Seeds;
+        this.Seeds = new List<double>();
+        this.GetSeedsFromTime(2);
     }
 
-    public Xoroshiro128Generator(IEnumerable<ulong> seeds) : base(seeds)
+    public Xoroshiro128Generator(double seed1, double seed2)
     {
-        _state = Seeds;
+        this.Seeds = new List<double>()
+        {
+            seed1,
+            seed2
+        };
     }
 
-    public Xoroshiro128Generator(IEnumerable<string> seeds) : base(seeds)
-    {
-        _state = Seeds;
-    }
-
-    public Xoroshiro128Generator(IEnumerable<ulong> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public Xoroshiro128Generator(IEnumerable<string> seeds, ulong minValue, ulong maxValue) : base(seeds, minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public Xoroshiro128Generator(ulong minValue, ulong maxValue) : base(minValue, maxValue)
-    {
-        _state = Seeds;
-    }
-
-    public override ulong Next()
+   
+    public override int Next()
     {
         var s0 = _state[0];
         var s1 = _state[1];
@@ -46,7 +32,7 @@ public class Xoroshiro128Generator : RandomGenerationBase<ulong, ulong>
         _state[0] = RotateLeft(s0, 55) ^ s1 ^ (s1 << 14);
         _state[1] = RotateLeft(s1, 36);
 
-        return result;
+        return (int)result;
     }
 
     private static ulong RotateLeft(ulong x, int k)
