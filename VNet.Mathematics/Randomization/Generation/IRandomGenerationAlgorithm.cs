@@ -1,4 +1,7 @@
-﻿namespace VNet.Mathematics.Randomization.Generation;
+﻿using VNet.Configuration;
+
+
+namespace VNet.Mathematics.Randomization.Generation;
 
 public interface IRandomGenerationAlgorithm : IRandomizationAlgorithm
 {
@@ -18,4 +21,12 @@ public interface IRandomGenerationAlgorithm : IRandomizationAlgorithm
     public long NextLongInclusive(long minValue, long maxValue);
     public float NextSingleInclusive(float minValue, float maxValue);
     public double NextDoubleInclusive(double minValue, double maxValue);
+    public int Next(VNet.Configuration.Range<int> range);
+    public long NextLong(VNet.Configuration.Range<int> range);
+    public float NextSingle(VNet.Configuration.Range<int> range);
+    public double NextDouble(VNet.Configuration.Range<int> range);
+    public int NextInclusive(VNet.Configuration.Range<int> range);
+    public long NextLongInclusive(VNet.Configuration.Range<int> range);
+    public float NextSingleInclusive(VNet.Configuration.Range<int> range);
+    public double NextDoubleInclusive(VNet.Configuration.Range<int> range);
 }

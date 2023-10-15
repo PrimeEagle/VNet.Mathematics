@@ -155,4 +155,44 @@ public abstract class RandomGenerationBase : IRandomGenerationAlgorithm
         }
         return result;
     }
+
+    public int Next(VNet.Configuration.Range<int> range)
+    {
+        return Next(range.Start, range.End);
+    }
+
+    public long NextLong(VNet.Configuration.Range<int> range)
+    {
+        return NextLong(range.Start, range.End);
+    }
+
+    public float NextSingle(VNet.Configuration.Range<int> range)
+    {
+        return NextSingle(range.Start, range.End);
+    }
+
+    public double NextDouble(VNet.Configuration.Range<int> range)
+    {
+        return NextDouble(range.Start, range.End);
+    }
+
+    public int NextInclusive(VNet.Configuration.Range<int> range)
+    {
+        return NextInclusive(range.Start, range.End);
+    }
+
+    public long NextLongInclusive(VNet.Configuration.Range<int> range)
+    {
+        return NextLongInclusive(range.Start, range.End);
+    }
+
+    public float NextSingleInclusive(VNet.Configuration.Range<int> range)
+    {
+        return NextSingleInclusive(range.Start, range.End);
+    }
+
+    public double NextDoubleInclusive(VNet.Configuration.Range<int> range)
+    {
+        return NextDoubleInclusive(range.Start, range.End);
+    }
 }
