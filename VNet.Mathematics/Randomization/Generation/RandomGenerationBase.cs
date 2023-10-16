@@ -161,17 +161,17 @@ public abstract class RandomGenerationBase : IRandomGenerationAlgorithm
         return Next(range.Start, range.End);
     }
 
-    public long NextLong(VNet.Configuration.Range<int> range)
+    public long NextLong(VNet.Configuration.Range<long> range)
     {
         return NextLong(range.Start, range.End);
     }
 
-    public float NextSingle(VNet.Configuration.Range<int> range)
+    public float NextSingle(VNet.Configuration.Range<float> range)
     {
         return NextSingle(range.Start, range.End);
     }
 
-    public double NextDouble(VNet.Configuration.Range<int> range)
+    public double NextDouble(VNet.Configuration.Range<double> range)
     {
         return NextDouble(range.Start, range.End);
     }
@@ -181,17 +181,17 @@ public abstract class RandomGenerationBase : IRandomGenerationAlgorithm
         return NextInclusive(range.Start, range.End);
     }
 
-    public long NextLongInclusive(VNet.Configuration.Range<int> range)
+    public long NextLongInclusive(VNet.Configuration.Range<long> range)
     {
         return NextLongInclusive(range.Start, range.End);
     }
 
-    public float NextSingleInclusive(VNet.Configuration.Range<int> range)
+    public float NextSingleInclusive(VNet.Configuration.Range<float> range)
     {
         return NextSingleInclusive(range.Start, range.End);
     }
 
-    public double NextDoubleInclusive(VNet.Configuration.Range<int> range)
+    public double NextDoubleInclusive(VNet.Configuration.Range<double> range)
     {
         return NextDoubleInclusive(range.Start, range.End);
     }
