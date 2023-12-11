@@ -12,14 +12,11 @@
   </Target>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\VNet.Configuration\VNet.Configuration\VNet.Configuration.csproj" />
-    <ProjectReference Include="..\..\VNet.System\VNet.System\VNet.System.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="alglib.net" Version="3.19.0" />
     <PackageReference Include="MathNet.Filtering" Version="0.7.0" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="VNet.Configuration" Version="1.0.0" />
+    <PackageReference Include="VNet.System" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
