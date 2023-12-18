@@ -1,22 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="alglib.net" Version="3.19.0" />
+		<PackageReference Include="MathNet.Filtering" Version="0.7.0" />
+		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+	</ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /e /y &quot;$(TargetPath)&quot; &quot;D:\My Code\VNet bin\&quot;" />
-  </Target>
+	<PropertyGroup Condition="'$(ServerBuild)' != ''">
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="alglib.net" Version="3.19.0" />
-    <PackageReference Include="MathNet.Filtering" Version="0.7.0" />
-    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="VNet.Configuration" Version="1.0.0" />
-    <PackageReference Include="VNet.System" Version="1.0.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(ServerBuild)' != ''">
+		<PackageReference Include="VNet.Configuration" Version="1.0.0" />
+		<PackageReference Include="VNet.System" Version="1.0.0" />
+	</ItemGroup>
 
+	<ItemGroup Condition="'$(ServerBuild)' == ''">
+		<ProjectReference Include="..\..\VNet.Configuration\VNet.Configuration\VNet.Configuration.csproj" />
+		<ProjectReference Include="..\..\VNet.System\VNet.System\VNet.System.csproj" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(ServerBuild)' == ''">
+		<Exec Command="xcopy /e /y &quot;$(TargetPath)&quot; &quot;D:\My Code\VNet bin\&quot;" />
+	</Target>
 </Project>
