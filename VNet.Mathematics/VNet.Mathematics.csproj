@@ -1,52 +1,45 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<PackageId>VNet.Mathematics</PackageId>
-		<Authors>PrimeEagle</Authors>
-		<Product>VNet.Mathematics</Product>
-		<Description>A mathematics class library which includes arithmetic and geometric calculations, combinatronics, discrete math, game theory, hashing, linear algebra, randomization and distribution, and sequences.</Description>
-		<PackageTags>dotnet;dotnet-core;dotnet-library;event;plugin;culture;localization;temp-file;percentage</PackageTags>
-		<PackageReleaseNotes>Add NuGet metadata.</PackageReleaseNotes>
-		<PackageIcon>icon.png</PackageIcon>
-		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/PrimeEagle/VNet.Mathematics</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/PrimeEagle/VNet.Mathematics</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<TargetFramework>net8.0</TargetFramework>
-		<AssemblyName>VNet.Mathematics</AssemblyName>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="icon.png" Pack="true" PackagePath="" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<PackageReference Include="alglib.net" Version="3.19.0" />
-		<PackageReference Include="MathNet.Filtering" Version="0.7.0" />
-		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-	</ItemGroup>
-
-	<PropertyGroup Condition="'$(ServerBuild)' != ''">
-	</PropertyGroup>
-
-	<ItemGroup Condition="'$(ServerBuild)' != ''">
-		<PackageReference Include="VNet.Configuration" Version="1.0.0" />
-		<PackageReference Include="VNet.System" Version="1.0.0" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(ServerBuild)' == ''">
-		<ProjectReference Include="..\..\VNet.Configuration\VNet.Configuration\VNet.Configuration.csproj" />
-		<ProjectReference Include="..\..\VNet.System\VNet.System\VNet.System.csproj" />
-	</ItemGroup>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(ServerBuild)' == ''">
-		<Exec Command="xcopy /e /y &quot;$(TargetPath)&quot; &quot;D:\My Code\VNet bin\&quot;" />
-	</Target>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>VNet.Mathematics</PackageId>
+    <Authors>PrimeEagle</Authors>
+    <Product>VNet.Mathematics</Product>
+    <Description>A mathematics class library which includes arithmetic and geometric calculations, combinatronics, discrete math, game theory, hashing, linear algebra, randomization and distribution, and sequences.</Description>
+    <PackageTags>dotnet;dotnet-core;dotnet-library;event;plugin;culture;localization;temp-file;percentage</PackageTags>
+    <PackageReleaseNotes>Add NuGet metadata.</PackageReleaseNotes>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/PrimeEagle/VNet.Mathematics</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/PrimeEagle/VNet.Mathematics</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>VNet.Mathematics</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="alglib.net" Version="3.19.0" />
+    <PackageReference Include="MathNet.Filtering" Version="0.7.0" />
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(ServerBuild)' != ''">
+  </PropertyGroup>
+  <ItemGroup Condition="'$(ServerBuild)' != ''">
+    <PackageReference Include="VNet.Configuration" Version="1.0.0" />
+    <PackageReference Include="VNet.System" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(ServerBuild)' == ''">
+    <ProjectReference Include="..\..\VNet.Configuration\VNet.Configuration\VNet.Configuration.csproj" />
+    <ProjectReference Include="..\..\VNet.System\VNet.System\VNet.System.csproj" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(ServerBuild)' == ''">
+    <Exec Command="xcopy /e /y &quot;$(TargetPath)&quot; &quot;D:\My Code\VNet bin\&quot;" />
+  </Target>
 </Project>
