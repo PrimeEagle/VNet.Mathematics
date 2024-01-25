@@ -31,11 +31,11 @@
   </ItemGroup>
   <PropertyGroup Condition="'$(ServerBuild)' != ''">
   </PropertyGroup>
-  <ItemGroup Condition="'$(ServerBuild)' != ''">
+  <ItemGroup Condition="'$(ServerBuild)' == 'true' ">
     <PackageReference Include="VNet.Configuration" Version="1.0.1" />
     <PackageReference Include="VNet.System" Version="1.1.1" />
   </ItemGroup>
-  <ItemGroup Condition="'$(ServerBuild)' == ''">
+  <ItemGroup Condition="'$(ServerBuild)' == 'false'  Or '$(ServerBuild)' == '' ">
     <ProjectReference Include="..\..\VNet.Configuration\VNet.Configuration\VNet.Configuration.csproj" />
     <ProjectReference Include="..\..\VNet.System\VNet.System\VNet.System.csproj" />
   </ItemGroup>
